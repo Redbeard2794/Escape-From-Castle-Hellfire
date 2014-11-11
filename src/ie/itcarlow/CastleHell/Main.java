@@ -11,8 +11,6 @@ import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
-import org.andengine.ui.IGameInterface.OnCreateResourcesCallback;
-import org.andengine.ui.IGameInterface.OnCreateSceneCallback;
 import org.andengine.ui.activity.BaseGameActivity;
 
 public class Main extends BaseGameActivity implements IUpdateHandler {
@@ -23,7 +21,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 	
 	private BitmapTextureAtlas playerAnimatedSprite;
 	private ITiledTextureRegion playerTiledTextureRegion;
-	AnimatedSprite sprNum;
+	AnimatedSprite playerSprite;
 	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -43,7 +41,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 
     private void loadGfx() {     
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");  
-
+        playerAnimatedSprite = new BitmapTextureAtlas(getTextureManager(), 685, 72);
+        playerTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(playerAnimatedSprite, this.getAssets(), "PlayerWalkRight.png", 0, 0, 11, 1);
+        playerAnimatedSprite.load();
         
     }
 
@@ -52,7 +52,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
   			throws Exception {
 
   		this.mScene = new Scene();
-  		this.mScene.setBackground(new Background(0, 125, 58));
+  		this.mScene.setBackground(new Background(255, 0, 0));
   		//register this activity as a scene touch listener
   		//this.mScene.setOnSceneTouchListener(this);
   	    pOnCreateSceneCallback.onCreateSceneFinished(this.mScene);  		
@@ -61,6 +61,12 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 	public void onPopulateScene(Scene pScene,
 			OnPopulateSceneCallback pOnPopulateSceneCallback) throws Exception {
 		// TODO Auto-generated method stub
+		   
+		   playerSprite = new AnimatedSprite(0,0,playerTiledTextureRegion, this.getVertexBufferObjectManager());
+		   playerSprite.animate(200);
+		   mScene.attachChild(playerSprite);
+		   
+		   pOnPopulateSceneCallback.onPopulateSceneFinished();
 		
 	}
 	@Override
