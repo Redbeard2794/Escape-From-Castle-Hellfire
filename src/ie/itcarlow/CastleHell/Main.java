@@ -8,8 +8,10 @@ import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.AnimatedSprite;
+import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
+import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.ui.activity.BaseGameActivity;
 
@@ -22,6 +24,18 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 	private BitmapTextureAtlas playerAnimatedSprite;
 	private ITiledTextureRegion playerTiledTextureRegion;
 	AnimatedSprite playerSprite;
+	
+	private BitmapTextureAtlas ArrowTexture;
+	private ITextureRegion ArrowTextureRegion;
+	Sprite rightArrowSprite;
+	
+	private BitmapTextureAtlas arrowLeftTexture;
+	private ITextureRegion leftArrowTextureRegion;
+	Sprite leftArrowSprite;
+	
+	private BitmapTextureAtlas jumpButtonTexture;
+	private ITextureRegion jumpButtonTextureRegion;
+	Sprite jumpButtonSprite;
 	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -41,10 +55,22 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 
     private void loadGfx() {     
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");  
+        
         playerAnimatedSprite = new BitmapTextureAtlas(getTextureManager(), 542, 73);
         playerTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(playerAnimatedSprite, this.getAssets(), "PlayerRightFixed.png", 0, 0, 11, 1);
         playerAnimatedSprite.load();
         
+        ArrowTexture = new BitmapTextureAtlas(getTextureManager(), 178,84);//237,112
+        ArrowTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(ArrowTexture, this, "SourceArrowTQ.png", 0, 0);
+        ArrowTexture.load();
+        
+        arrowLeftTexture = new BitmapTextureAtlas(getTextureManager(),178,84);
+        leftArrowTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(arrowLeftTexture, this, "SourceArrowTQLeft.png", 0, 0);
+        arrowLeftTexture.load();
+        
+        jumpButtonTexture = new BitmapTextureAtlas(getTextureManager(),397,86);//397,86
+        jumpButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(jumpButtonTexture, this, "JumpButton.png", 0, 0);
+        jumpButtonTexture.load();
     }
 
     @Override
@@ -65,6 +91,15 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 		   playerSprite = new AnimatedSprite(0,0,playerTiledTextureRegion, this.getVertexBufferObjectManager());
 		   playerSprite.animate(200);
 		   mScene.attachChild(playerSprite);
+
+		   rightArrowSprite = new Sprite(530,390,ArrowTextureRegion,this.mEngine.getVertexBufferObjectManager());
+		   mScene.attachChild(rightArrowSprite);
+		   
+		   leftArrowSprite = new Sprite(10,390,leftArrowTextureRegion,this.mEngine.getVertexBufferObjectManager());
+		   mScene.attachChild(leftArrowSprite);
+		   
+		   jumpButtonSprite = new Sprite(210, 400, jumpButtonTextureRegion, this.mEngine.getVertexBufferObjectManager());
+		   mScene.attachChild(jumpButtonSprite);
 		   
 		   pOnPopulateSceneCallback.onPopulateSceneFinished();
 		
