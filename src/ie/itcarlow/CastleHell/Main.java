@@ -41,8 +41,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 
     private void loadGfx() {     
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");  
-        playerAnimatedSprite = new BitmapTextureAtlas(getTextureManager(), 685, 72);
-        playerTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(playerAnimatedSprite, this.getAssets(), "PlayerWalkRight.png", 0, 0, 11, 1);
+        playerAnimatedSprite = new BitmapTextureAtlas(getTextureManager(), 542, 73);
+        playerTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(playerAnimatedSprite, this.getAssets(), "PlayerRightFixed.png", 0, 0, 11, 1);
         playerAnimatedSprite.load();
         
     }
