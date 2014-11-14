@@ -37,6 +37,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 	private ITextureRegion jumpButtonTextureRegion;
 	Sprite jumpButtonSprite;
 	
+	Player p;
+	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		final Camera camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
@@ -71,6 +73,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
         jumpButtonTexture = new BitmapTextureAtlas(getTextureManager(),397,86);//397,86
         jumpButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(jumpButtonTexture, this, "JumpButton.png", 0, 0);
         jumpButtonTexture.load();
+        
+
     }
 
     @Override
@@ -88,9 +92,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 			OnPopulateSceneCallback pOnPopulateSceneCallback) throws Exception {
 		// TODO Auto-generated method stub
 		   
-		   playerSprite = new AnimatedSprite(0,0,playerTiledTextureRegion, this.getVertexBufferObjectManager());
-		   playerSprite.animate(1000);
-		   mScene.attachChild(playerSprite);
+		   //playerSprite = new AnimatedSprite(0,0,playerTiledTextureRegion, this.getVertexBufferObjectManager());
+		   //playerSprite.animate(1000);
+		   //mScene.attachChild(playerSprite);
 
 		   rightArrowSprite = new Sprite(530,390,ArrowTextureRegion,this.mEngine.getVertexBufferObjectManager());
 		   mScene.attachChild(rightArrowSprite);
@@ -101,13 +105,17 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 		   jumpButtonSprite = new Sprite(210, 400, jumpButtonTextureRegion, this.mEngine.getVertexBufferObjectManager());
 		   mScene.attachChild(jumpButtonSprite);
 		   
+	        p = new Player(100, 200, playerTiledTextureRegion, this.getVertexBufferObjectManager());
+	        p.animate(250);
+	        mScene.attachChild(p);
+		   
 		   pOnPopulateSceneCallback.onPopulateSceneFinished();
 		
 	}
 	@Override
 	public void onUpdate(float pSecondsElapsed) {
 		// TODO Auto-generated method stub
-		
+		p.setX(p.getX()+1);
 	}
 	@Override
 	public void reset() {
