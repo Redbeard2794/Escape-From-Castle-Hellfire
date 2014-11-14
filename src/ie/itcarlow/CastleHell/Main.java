@@ -71,6 +71,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
         jumpButtonTexture = new BitmapTextureAtlas(getTextureManager(),397,86);//397,86
         jumpButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(jumpButtonTexture, this, "JumpButton.png", 0, 0);
         jumpButtonTexture.load();
+        
+        
+        
     }
 
     @Override
@@ -91,7 +94,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 		   playerSprite = new AnimatedSprite(0,0,playerTiledTextureRegion, this.getVertexBufferObjectManager());
 		   playerSprite.animate(1000);
 		   mScene.attachChild(playerSprite);
-
+		   
 		   rightArrowSprite = new Sprite(530,390,ArrowTextureRegion,this.mEngine.getVertexBufferObjectManager());
 		   mScene.attachChild(rightArrowSprite);
 		   
