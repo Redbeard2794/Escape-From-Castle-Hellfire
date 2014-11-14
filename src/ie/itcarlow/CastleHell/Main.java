@@ -89,7 +89,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 		// TODO Auto-generated method stub
 		   
 		   playerSprite = new AnimatedSprite(0,0,playerTiledTextureRegion, this.getVertexBufferObjectManager());
-		   playerSprite.animate(200);
+		   playerSprite.animate(1000);
 		   mScene.attachChild(playerSprite);
 
 		   rightArrowSprite = new Sprite(530,390,ArrowTextureRegion,this.mEngine.getVertexBufferObjectManager());
