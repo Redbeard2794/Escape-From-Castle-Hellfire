@@ -65,12 +65,12 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 	private void loadGfx() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 
-		playerAnimatedSprite = new BitmapTextureAtlas(getTextureManager(), 542,
-				73);
-		playerTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory
-				.createTiledFromAsset(playerAnimatedSprite, this.getAssets(),
-						"PlayerRightFixed.png", 0, 0, 11, 1);
-		playerAnimatedSprite.load();
+		//playerAnimatedSprite = new BitmapTextureAtlas(getTextureManager(), 542,
+		//		73);
+		//playerTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory
+		//		.createTiledFromAsset(playerAnimatedSprite, this.getAssets(),
+		//				"PlayerRightFixed.png", 0, 0, 11, 1);
+		//playerAnimatedSprite.load();
 
 		ArrowTexture = new BitmapTextureAtlas(getTextureManager(), 178, 84);// 237,112
 		ArrowTextureRegion = BitmapTextureAtlasTextureRegionFactory
@@ -90,7 +90,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 		jumpButtonTexture.load();
 		
 		t = new ProximityTrap(this,getTextureManager());
-
+		p = new Player(this,getTextureManager());
 	}
 
 	@Override
@@ -110,12 +110,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 		// TODO Auto-generated method stub
 
 		   
-		   //playerSprite = new AnimatedSprite(0,0,playerTiledTextureRegion, this.getVertexBufferObjectManager());
-		   //playerSprite.animate(1000);
-		   //mScene.attachChild(playerSprite);
-        	p = new Player(100, 200, playerTiledTextureRegion, this.getVertexBufferObjectManager());
-        	p.animate(250);
-        	mScene.attachChild(p);
+        	//p = new Player(100, 200, playerTiledTextureRegion, this.getVertexBufferObjectManager());
+        	//p.animate(250);
+        	//mScene.attachChild(p);
         
 		   rightArrowSprite = new Sprite(530,390,ArrowTextureRegion,this.mEngine.getVertexBufferObjectManager())
 		   {
@@ -123,9 +120,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 	           public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
 	                                        final float pTouchAreaLocalX,
 	                                        final float pTouchAreaLocalY) {
-	               //setBodyPosition(this, pSceneTouchEvent.getX() - this.getWidth() / 2, pSceneTouchEvent.getY() - this.getHeight() / 2);
-	        	   //p.setX(p.getX()+100);
-	        	   //mScene.setBackground(new Background(0, 255, 0));
 	        	   right = true;
 	        	   left = false;
 	               return true;
@@ -140,9 +134,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 	           public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
 	                                        final float pTouchAreaLocalX,
 	                                        final float pTouchAreaLocalY) {
-	               //setBodyPosition(this, pSceneTouchEvent.getX() - this.getWidth() / 2, pSceneTouchEvent.getY() - this.getHeight() / 2);
-	        	   //p.setX(p.getX()+100);
-	        	   //mScene.setBackground(new Background(0, 255, 0));
 	        	   right = false;
 	        	   left = true;
 	               return true;
@@ -170,12 +161,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 				this.mEngine.getVertexBufferObjectManager());
 		mScene.attachChild(jumpButtonSprite);
 
-		p = new Player(100, 200, playerTiledTextureRegion,
-				this.getVertexBufferObjectManager());
-		p.animate(250);
-		mScene.attachChild(p);
 		
 		t.Populate(this.mEngine,mScene);
+		p.Populate(this.mEngine, mScene);
 		
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
 
@@ -185,11 +173,10 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 	public void onUpdate(float pSecondsElapsed) {
 		// TODO Auto-generated method stub
 
-		//p.setX(p.getX()+1);
-		if(right == true)
-			p.setX(p.getX()+1);
-		else if (left == true)
-			p.setX(p.getX()-1);
+		//if(right == true)
+			//p.setX(p.getX()+1);
+		//else if (left == true)
+			//p.setX(p.getX()-1);
 	}
 
 	@Override
