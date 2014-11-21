@@ -7,13 +7,11 @@ import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
-import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.ITextureRegion;
-import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.ui.activity.BaseGameActivity;
 
 public class Main extends BaseGameActivity implements IUpdateHandler
@@ -23,9 +21,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 
 	private Scene mScene;
 
-	private BitmapTextureAtlas playerAnimatedSprite;
-	private ITiledTextureRegion playerTiledTextureRegion;
-	AnimatedSprite playerSprite;
+	// private BitmapTextureAtlas playerAnimatedSprite;
+	// private ITiledTextureRegion playerTiledTextureRegion;
+	// AnimatedSprite playerSprite;
 
 	private BitmapTextureAtlas ArrowTexture;
 	private ITextureRegion ArrowTextureRegion;
@@ -128,8 +126,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
 					final float pTouchAreaLocalX, final float pTouchAreaLocalY)
 			{
-				right = true;
-				left = false;
+				// right = true;
+				// left = false;
+				// p.setPlayerX(p.getPlayerX()+1);
 				return true;
 			}
 		};
@@ -143,8 +142,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
 					final float pTouchAreaLocalX, final float pTouchAreaLocalY)
 			{
-				right = false;
-				left = true;
+				// right = false;
+				// left = true;
+				// p.setPlayerX(p.getPlayerX()-1);
 				return true;
 			}
 		};
@@ -156,19 +156,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		mScene.attachChild(jumpButtonSprite);
 
 		this.mEngine.registerUpdateHandler(this);
-		pOnPopulateSceneCallback.onPopulateSceneFinished();
-
-		rightArrowSprite = new Sprite(530, 390, ArrowTextureRegion,
-				this.mEngine.getVertexBufferObjectManager());
-		mScene.attachChild(rightArrowSprite);
-
-		leftArrowSprite = new Sprite(10, 390, leftArrowTextureRegion,
-				this.mEngine.getVertexBufferObjectManager());
-		mScene.attachChild(leftArrowSprite);
-
-		jumpButtonSprite = new Sprite(210, 400, jumpButtonTextureRegion,
-				this.mEngine.getVertexBufferObjectManager());
-		mScene.attachChild(jumpButtonSprite);
 
 		t.Populate(this.mEngine, mScene);
 		p.Populate(this.mEngine, mScene);
