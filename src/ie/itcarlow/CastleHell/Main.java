@@ -9,6 +9,7 @@ import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.ITextureRegion;
@@ -38,6 +39,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 	Sprite jumpButtonSprite;
 	
 	Player p;
+	boolean right;
+	boolean left;
 	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -95,27 +98,59 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 		   //playerSprite = new AnimatedSprite(0,0,playerTiledTextureRegion, this.getVertexBufferObjectManager());
 		   //playerSprite.animate(1000);
 		   //mScene.attachChild(playerSprite);
-
-		   rightArrowSprite = new Sprite(530,390,ArrowTextureRegion,this.mEngine.getVertexBufferObjectManager());
+        	p = new Player(100, 200, playerTiledTextureRegion, this.getVertexBufferObjectManager());
+        	p.animate(250);
+        	mScene.attachChild(p);
+        
+		   rightArrowSprite = new Sprite(530,390,ArrowTextureRegion,this.mEngine.getVertexBufferObjectManager())
+		   {
+	           @Override
+	           public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
+	                                        final float pTouchAreaLocalX,
+	                                        final float pTouchAreaLocalY) {
+	               //setBodyPosition(this, pSceneTouchEvent.getX() - this.getWidth() / 2, pSceneTouchEvent.getY() - this.getHeight() / 2);
+	        	   //p.setX(p.getX()+100);
+	        	   //mScene.setBackground(new Background(0, 255, 0));
+	        	   right = true;
+	        	   left = false;
+	               return true;
+	           }
+		   };
 		   mScene.attachChild(rightArrowSprite);
+		   this.mScene.registerTouchArea(rightArrowSprite);
 		   
-		   leftArrowSprite = new Sprite(10,390,leftArrowTextureRegion,this.mEngine.getVertexBufferObjectManager());
+		   leftArrowSprite = new Sprite(10,390,leftArrowTextureRegion,this.mEngine.getVertexBufferObjectManager())
+		   {
+	           @Override
+	           public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
+	                                        final float pTouchAreaLocalX,
+	                                        final float pTouchAreaLocalY) {
+	               //setBodyPosition(this, pSceneTouchEvent.getX() - this.getWidth() / 2, pSceneTouchEvent.getY() - this.getHeight() / 2);
+	        	   //p.setX(p.getX()+100);
+	        	   //mScene.setBackground(new Background(0, 255, 0));
+	        	   right = false;
+	        	   left = true;
+	               return true;
+	           }
+		   };
 		   mScene.attachChild(leftArrowSprite);
+		   this.mScene.registerTouchArea(leftArrowSprite);
 		   
 		   jumpButtonSprite = new Sprite(210, 400, jumpButtonTextureRegion, this.mEngine.getVertexBufferObjectManager());
 		   mScene.attachChild(jumpButtonSprite);
 		   
-	        p = new Player(100, 200, playerTiledTextureRegion, this.getVertexBufferObjectManager());
-	        p.animate(250);
-	        mScene.attachChild(p);
-		   
+		   this.mEngine.registerUpdateHandler(this);
 		   pOnPopulateSceneCallback.onPopulateSceneFinished();
 		
 	}
 	@Override
 	public void onUpdate(float pSecondsElapsed) {
 		// TODO Auto-generated method stub
-		p.setX(p.getX()+1);
+		//p.setX(p.getX()+1);
+		if(right == true)
+			p.setX(p.getX()+1);
+		else if (left == true)
+			p.setX(p.getX()-1);
 	}
 	@Override
 	public void reset() {
