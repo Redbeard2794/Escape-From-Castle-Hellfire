@@ -5,13 +5,18 @@ import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 
-public class ProximityTrap 
+import android.content.Context;
+
+public class ProximityTrap
 {
-	private BitmapTextureAtlas mTexAtlas;
-	private ITiledTextureRegion mTexRegion;
 	private Sprite mSprite;
 	
-	public ProximityTrap(Scene theScene)
+	public ProximityTrap(Scene theScene,Context c)
+	{
+		loadGFX(c);
+	}
+	
+	private void loadGFX(Context c)
 	{
 		
 	}
