@@ -3,13 +3,10 @@ package ie.itcarlow.CastleHell;
 import org.andengine.engine.Engine;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.AnimatedSprite;
-import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.texture.TextureManager;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
-import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
-import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.content.Context;
 
@@ -27,6 +24,8 @@ public class Player{
 	public Player(Context c,TextureManager t)
 	{     
 		loadGFX(c,t);
+		playerX = 250;
+		playerY = 250;
 		//super(pX,pY,pTiledTextureRegion,pVertextBufferObjectManager);
 		//centreX = this.getX() + this.getWidth()/2;
 		//centreY = this.getY() +this.getHeight()/2;
@@ -35,16 +34,30 @@ public class Player{
 		//playerY = this.getY();;
 		//right = true;
 	}
+	/*public float getPlayerX() {
+		return playerX;
+	}
+	public void setPlayerX(float pX) {
+		this.playerX = pX;
+	}
+	public float getPlayerY() {
+		return playerY;
+	}
+	public void setPlayerY(float pY) {
+		this.playerY = pY;
+	}*/
 	private void loadGFX(Context c,TextureManager t)
 	{
 		playerTexture = new BitmapTextureAtlas(t,542,73);
-		playerTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(playerTexture, c,
+		playerTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(playerTexture, c.getAssets(),
 				"PlayerRightFixed.png", 0, 0, 11, 1);
 		playerTexture.load();
 	}
 	public void Populate(Engine c,Scene s)
 	{
-		playerSprite = new AnimatedSprite(53,51,playerTiledTextureRegion,c.getVertexBufferObjectManager());
+		//FIXED IT MOTHERFUCKER!!!!!!!!
+		playerSprite = new AnimatedSprite(250,250,playerTiledTextureRegion,c.getVertexBufferObjectManager());
+		playerSprite.animate(250);
 		s.attachChild(playerSprite);
 		
 	}
