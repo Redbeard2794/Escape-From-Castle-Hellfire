@@ -38,7 +38,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 	Sprite jumpButtonSprite;
 
 	Player p;
-
+	ProximityTrap t;
+	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		final Camera camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
@@ -83,6 +84,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 				.createFromAsset(jumpButtonTexture, this, "JumpButton.png", 0,
 						0);
 		jumpButtonTexture.load();
+		
+		t = new ProximityTrap(this,getTextureManager());
 
 	}
 
@@ -106,7 +109,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 		 this.getVertexBufferObjectManager());
 		 playerSprite.animate(1000);
 		 mScene.attachChild(playerSprite);*/
-
+		
 		rightArrowSprite = new Sprite(530, 390, ArrowTextureRegion,
 				this.mEngine.getVertexBufferObjectManager());
 		mScene.attachChild(rightArrowSprite);
@@ -123,7 +126,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler {
 				this.getVertexBufferObjectManager());
 		p.animate(250);
 		mScene.attachChild(p);
-
+		
+		t.Populate(this.mEngine,mScene);
+		
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
 
 	}
