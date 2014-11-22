@@ -14,6 +14,8 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegion
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.ui.activity.BaseGameActivity;
 
+import android.view.MotionEvent;
+
 public class Main extends BaseGameActivity implements IUpdateHandler
 {
 	private static final int CAMERA_WIDTH = 720;
@@ -40,8 +42,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	Player p;
 
 	ProximityTrap t;
-	boolean right;
-	boolean left;
+	//boolean right;
+	//boolean left;
 
 	@Override
 	public EngineOptions onCreateEngineOptions()
@@ -126,15 +128,33 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
 					final float pTouchAreaLocalX, final float pTouchAreaLocalY)
 			{
-				// right = true;
-				// left = false;
-				// p.setPlayerX(p.getPlayerX()+1);
+				int myEventAction = pSceneTouchEvent.getAction();
+
+		        switch (myEventAction) 
+		        {
+		          case MotionEvent.ACTION_DOWN:{
+		        	  p.setMoveRight(true);
+
+		        	   mScene.setBackground(new Background(0, 255, 0));
+		        	   break;}
+		          case MotionEvent.ACTION_MOVE: {
+
+		            	break;}
+		           case MotionEvent.ACTION_UP:{
+		        	   p.setMoveRight(false);
+			        	  p.setFaceRight(true);
+			        	  p.setFaceLeft(false);
+		        	   mScene.setBackground(new Background(255, 0, 0));
+		                break;}
+		        }
 				return true;
 			}
 		};
 		mScene.attachChild(rightArrowSprite);
 		this.mScene.registerTouchArea(rightArrowSprite);
-
+		//this.mScene.setTouchAreaBindingOnActionDownEnabled(true);
+		//this.mEngine.registerUpdateHandler(this);
+		
 		leftArrowSprite = new Sprite(10, 390, leftArrowTextureRegion,
 				this.mEngine.getVertexBufferObjectManager())
 		{
@@ -142,9 +162,25 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
 					final float pTouchAreaLocalX, final float pTouchAreaLocalY)
 			{
-				// right = false;
-				// left = true;
-				// p.setPlayerX(p.getPlayerX()-1);
+				int myEventAction = pSceneTouchEvent.getAction();
+
+		        switch (myEventAction) 
+		        {
+		          case MotionEvent.ACTION_DOWN:{
+		        	  p.setMoveLeft(true);
+
+		        	   mScene.setBackground(new Background(0, 0, 255));
+		        	   break;}
+		          case MotionEvent.ACTION_MOVE: {
+
+		            	break;}
+		           case MotionEvent.ACTION_UP:{
+		        	   p.setMoveLeft(false);
+			        	  p.setFaceRight(false);
+			        	  p.setFaceLeft(true);
+		        	   mScene.setBackground(new Background(255, 0, 0));
+		                break;}
+		        }
 				return true;
 			}
 		};
@@ -159,6 +195,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 
 		t.Populate(this.mEngine, mScene);
 		p.Populate(this.mEngine, mScene);
+		
 
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
 
@@ -168,11 +205,11 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	public void onUpdate(float pSecondsElapsed)
 	{
 		// TODO Auto-generated method stub
-
-		// if(right == true)
-		// p.setX(p.getX()+1);
-		// else if (left == true)
-		// p.setX(p.getX()-1);
+		//mScene.setBackground(new Background(255, 0, 255));
+		//p.Populate(this.mEngine, mScene);
+		p.Update();
+		//mScene.setBackground(new Background(255, 0, 0));
+		//p.setPlayerX(p.getPlayerX()+1);
 	}
 
 	@Override
