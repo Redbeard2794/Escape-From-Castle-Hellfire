@@ -23,10 +23,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 
 	private Scene mScene;
 
-	// private BitmapTextureAtlas playerAnimatedSprite;
-	// private ITiledTextureRegion playerTiledTextureRegion;
-	// AnimatedSprite playerSprite;
-
 	private BitmapTextureAtlas ArrowTexture;
 	private ITextureRegion ArrowTextureRegion;
 	Sprite rightArrowSprite;
@@ -38,12 +34,15 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	private BitmapTextureAtlas jumpButtonTexture;
 	private ITextureRegion jumpButtonTextureRegion;
 	Sprite jumpButtonSprite;
+	
+	private BitmapTextureAtlas backgroundTexture;
+	private ITextureRegion backgroundTextureRegion;
+	Sprite backgroundSprite;
 
 	Player p;
 
 	ProximityTrap t;
-	//boolean right;
-	//boolean left;
+
 
 	@Override
 	public EngineOptions onCreateEngineOptions()
@@ -76,7 +75,11 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		// .createTiledFromAsset(playerAnimatedSprite, this.getAssets(),
 		// "PlayerRightFixed.png", 0, 0, 11, 1);
 		// playerAnimatedSprite.load();
-
+		backgroundTexture = new BitmapTextureAtlas(getTextureManager(),720,480);
+		backgroundTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(backgroundTexture,
+				this, "Background1.png",0,0);
+		backgroundTexture.load();
+		
 		ArrowTexture = new BitmapTextureAtlas(getTextureManager(), 178, 84);// 237,112
 		ArrowTextureRegion = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(ArrowTexture, this, "SourceArrowTQ.png", 0, 0);
@@ -104,7 +107,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	{
 
 		this.mScene = new Scene();
-		this.mScene.setBackground(new Background(255, 0, 0));
+		//this.mScene.setBackground(new Background(255, 0, 0));
 		// register this activity as a scene touch listener
 		// this.mScene.setOnSceneTouchListener(this);
 		pOnCreateSceneCallback.onCreateSceneFinished(this.mScene);
@@ -116,11 +119,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	{
 		// TODO Auto-generated method stub
 
-		// p = new Player(100, 200, playerTiledTextureRegion,
-		// this.getVertexBufferObjectManager());
-		// p.animate(250);
-		// mScene.attachChild(p);
 
+		backgroundSprite = new Sprite(0,0,backgroundTextureRegion,this.mEngine.getVertexBufferObjectManager());
+		mScene.attachChild(backgroundSprite);
 		rightArrowSprite = new Sprite(530, 390, ArrowTextureRegion,
 				this.mEngine.getVertexBufferObjectManager())
 		{
@@ -135,7 +136,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		          case MotionEvent.ACTION_DOWN:{
 		        	  p.setMoveRight(true);
 
-		        	   mScene.setBackground(new Background(0, 255, 0));
+		        	   //mScene.setBackground(new Background(0, 255, 0));
 		        	   break;}
 		          case MotionEvent.ACTION_MOVE: {
 
@@ -144,7 +145,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		        	   p.setMoveRight(false);
 			        	  p.setFaceRight(true);
 			        	  p.setFaceLeft(false);
-		        	   mScene.setBackground(new Background(255, 0, 0));
+		        	   //mScene.setBackground(new Background(255, 0, 0));
 		                break;}
 		        }
 				return true;
@@ -153,7 +154,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		mScene.attachChild(rightArrowSprite);
 		this.mScene.registerTouchArea(rightArrowSprite);
 		//this.mScene.setTouchAreaBindingOnActionDownEnabled(true);
-		//this.mEngine.registerUpdateHandler(this);
 		
 		leftArrowSprite = new Sprite(10, 390, leftArrowTextureRegion,
 				this.mEngine.getVertexBufferObjectManager())
@@ -169,7 +169,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		          case MotionEvent.ACTION_DOWN:{
 		        	  p.setMoveLeft(true);
 
-		        	   mScene.setBackground(new Background(0, 0, 255));
+		        	   //mScene.setBackground(new Background(0, 0, 255));
 		        	   break;}
 		          case MotionEvent.ACTION_MOVE: {
 
@@ -178,7 +178,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		        	   p.setMoveLeft(false);
 			        	  p.setFaceRight(false);
 			        	  p.setFaceLeft(true);
-		        	   mScene.setBackground(new Background(255, 0, 0));
+		        	   //mScene.setBackground(new Background(255, 0, 0));
 		                break;}
 		        }
 				return true;
@@ -205,11 +205,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	public void onUpdate(float pSecondsElapsed)
 	{
 		// TODO Auto-generated method stub
-		//mScene.setBackground(new Background(255, 0, 255));
-		//p.Populate(this.mEngine, mScene);
+
 		p.Update();
-		//mScene.setBackground(new Background(255, 0, 0));
-		//p.setPlayerX(p.getPlayerX()+1);
+
 	}
 
 	@Override
