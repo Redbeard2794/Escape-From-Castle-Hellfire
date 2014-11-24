@@ -140,7 +140,7 @@ public class Player
 			//playerLeftSprite.setVisible(false);
 			playerRightIdleSprite.setVisible(false);
 			playerLeftIdleSprite.setVisible(false);
-			playerX+=3;
+			playerX+=1.5;
 		}
 		else
 		{
@@ -152,7 +152,7 @@ public class Player
 			playerLeftSprite.setVisible(true);
 			playerRightIdleSprite.setVisible(false);
 			playerLeftIdleSprite.setVisible(false);
-			playerX-=3;
+			playerX-=1.5;
 		}
 		else
 		{
