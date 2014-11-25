@@ -42,6 +42,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	Player p;
 
 	ProximityTrap t;
+	
+	Platform plat;
 
 
 	@Override
@@ -99,6 +101,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 
 		t = new ProximityTrap(200, 50, this, getTextureManager());
 		p = new Player(this, getTextureManager());
+		plat = new Platform(this,getTextureManager());
 	}
 
 	@Override
@@ -195,7 +198,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 
 		t.Populate(this.mEngine, mScene);
 		p.Populate(this.mEngine, mScene);
-		
+		plat.Populate(this.mEngine, mScene);
 
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
 
