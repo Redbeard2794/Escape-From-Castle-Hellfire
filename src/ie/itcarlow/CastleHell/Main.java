@@ -113,6 +113,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		//this.mScene.setBackground(new Background(255, 0, 0));
 		// register this activity as a scene touch listener
 		// this.mScene.setOnSceneTouchListener(this);
+		//final LevelLoader levelLoader = new LevelLoader();
+		//levelLoader.setAssetBasePath("level/");
 		pOnCreateSceneCallback.onCreateSceneFinished(this.mScene);
 	}
 

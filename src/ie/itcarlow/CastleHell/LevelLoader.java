@@ -10,4 +10,14 @@ public class LevelLoader {
 	
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM = "platform";
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PROXIMITYTRAP = "proximityTrap";
+	
+	public LevelLoader()
+	{
+
+	}
+
+	//public void setAssetBasePath(String string) {
+	//	// TODO Auto-generated method stub
+	//	
+	//}
 }
