@@ -5,14 +5,20 @@ import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
+import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.Scene;
+import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.ITextureRegion;
+import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.BaseGameActivity;
+import org.andengine.util.SAXUtils;
+import org.andengine.util.level.IEntityLoader;
 import org.andengine.util.level.LevelLoader;
+import org.andengine.util.level.constants.LevelConstants;
 
 import android.view.MotionEvent;
 
@@ -131,6 +137,14 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		//built in levelloader class
 		final LevelLoader levelLoader = new LevelLoader();
 		levelLoader.setAssetBasePath("level/");
+		
+		//levelLoader.registerEntityLoader(TAG_ENTITY, new IEntityLoader()
+		//Need this version of registerEntityLoader.....I think
+		//Also need to modify the platform constructor so it takes:
+		//x, y, width and height
+		//means i will have to modify the example code a bit to make it work
+		//The example code just draws an animated sprite here. All it needs before hand is the texture region
+		//so that will take a bit of fiddling
 		
 		pOnCreateSceneCallback.onCreateSceneFinished(this.mScene);
 	}
