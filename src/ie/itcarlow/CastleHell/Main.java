@@ -6,13 +6,13 @@ import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
-import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.ui.activity.BaseGameActivity;
+import org.andengine.util.level.LevelLoader;
 
 import android.view.MotionEvent;
 
@@ -21,6 +21,18 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	private static final int CAMERA_WIDTH = 720;
 	private static final int CAMERA_HEIGHT = 480;
 
+	//for levels
+	private static final String TAG_ENTITY = "entity";
+	private static final String TAG_ENTITY_ATTRIBUTE_X = "x";
+	private static final String TAG_ENTITY_ATTRIBUTE_Y = "y";
+	private static final String TAG_ENTITY_ATTRIBUTE_WIDTH = "width";
+	private static final String TAG_ENTITY_ATTRIBUTE_HEIGHT = "height";
+	private static final String TAG_ENTITY_ATTRIBUTE_TYPE = "type";
+	
+	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM = "platform";
+	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PROXIMITYTRAP = "proximityTrap";
+	
+	
 	private Scene mScene;
 
 	private BitmapTextureAtlas ArrowTexture;
@@ -115,6 +127,11 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		// this.mScene.setOnSceneTouchListener(this);
 		//final LevelLoader levelLoader = new LevelLoader();
 		//levelLoader.setAssetBasePath("level/");
+		
+		//built in levelloader class
+		final LevelLoader levelLoader = new LevelLoader();
+		levelLoader.setAssetBasePath("level/");
+		
 		pOnCreateSceneCallback.onCreateSceneFinished(this.mScene);
 	}
 

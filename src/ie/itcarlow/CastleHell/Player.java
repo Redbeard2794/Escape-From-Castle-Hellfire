@@ -11,7 +11,9 @@ import android.content.Context;
 
 public class Player
 {
-
+	//https://github.com/nicolasgramlich/AndEngineExamples/blob/GLES2/src/org/andengine/examples/LevelLoaderExample.java
+	//https://github.com/nicolasgramlich/AndEngineExamples/blob/GLES2/assets/level/example.lvl
+	
 	// if true player is facing to the right, if false player is facing towards
 	// the left
 	boolean moveRight;

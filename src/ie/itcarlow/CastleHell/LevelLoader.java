@@ -1,6 +1,6 @@
 package ie.itcarlow.CastleHell;
 
-public class LevelLoader {
+public class levelLoader {
 	private static final String TAG_ENTITY = "entity";
 	private static final String TAG_ENTITY_ATTRIBUTE_X = "x";
 	private static final String TAG_ENTITY_ATTRIBUTE_Y = "y";
@@ -11,7 +11,7 @@ public class LevelLoader {
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM = "platform";
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PROXIMITYTRAP = "proximityTrap";
 	
-	public LevelLoader()
+	public levelLoader()
 	{
 
 	}
