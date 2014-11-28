@@ -19,7 +19,9 @@ import org.andengine.util.SAXUtils;
 import org.andengine.util.level.IEntityLoader;
 import org.andengine.util.level.LevelLoader;
 import org.andengine.util.level.constants.LevelConstants;
+import org.xml.sax.Attributes;
 
+import android.content.Context;
 import android.view.MotionEvent;
 
 public class Main extends BaseGameActivity implements IUpdateHandler
@@ -61,7 +63,10 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 
 	ProximityTrap t;
 	
-	Platform plat;
+	//Platform plat;
+	
+	Context c = this;
+	
 
 
 	@Override
@@ -119,7 +124,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 
 		t = new ProximityTrap(200, 50, this, getTextureManager());
 		p = new Player(this, getTextureManager());
-		plat = new Platform(this,getTextureManager());
+		//plat = new Platform(this,getTextureManager());
 	}
 
 	@Override
@@ -145,6 +150,44 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		//means i will have to modify the example code a bit to make it work
 		//The example code just draws an animated sprite here. All it needs before hand is the texture region
 		//so that will take a bit of fiddling
+		
+		levelLoader.registerEntityLoader(TAG_ENTITY, new IEntityLoader() {
+			
+			@Override
+			public IEntity onLoadEntity(final String pEntityName, final Attributes pAttributes) {
+			final int x = SAXUtils.getIntAttributeOrThrow(pAttributes, TAG_ENTITY_ATTRIBUTE_X);
+			final int y = SAXUtils.getIntAttributeOrThrow(pAttributes, TAG_ENTITY_ATTRIBUTE_Y);
+			final int width = SAXUtils.getIntAttributeOrThrow(pAttributes, TAG_ENTITY_ATTRIBUTE_WIDTH);
+			final int height = SAXUtils.getIntAttributeOrThrow(pAttributes, TAG_ENTITY_ATTRIBUTE_HEIGHT);
+			final String type = SAXUtils.getAttributeOrThrow(pAttributes, TAG_ENTITY_ATTRIBUTE_TYPE);
+//			final VertexBufferObjectManager vertexBufferObjectManager = LevelLoaderExample.this.getVertexBufferObjectManager();
+//			final AnimatedSprite face;//replace with sprite
+			
+			
+			
+			final Platform spr;
+			//Dont declare it here. Create an empty list/array of platform objects 
+			//and add a new one here(so we can update it and call populate methods later)
+			//list tutorial http://tutorials.jenkov.com/java-collections/list.html
+			if(type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM)) {
+				spr = new Platform(c,getTextureManager(),x, y, width, height);
+			}
+//			} else if(type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_CIRCLE)) {
+//			face = new AnimatedSprite(x, y, width, height, LevelLoaderExample.this.mCircleFaceTextureRegion, vertexBufferObjectManager);
+//			} else if(type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_TRIANGLE)) {
+//			face = new AnimatedSprite(x, y, width, height, LevelLoaderExample.this.mTriangleFaceTextureRegion, vertexBufferObjectManager);
+//			} else if(type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_HEXAGON)) {
+//			face = new AnimatedSprite(x, y, width, height, LevelLoaderExample.this.mHexagonFaceTextureRegion, vertexBufferObjectManager);
+//			} 
+			else {
+			throw new IllegalArgumentException();
+			}
+//			face.animate(200);
+			//spr.Populate(c, mScene);
+			return spr.getSprite();//get the platform sprite(a get method) and return it
+			}
+			});
+		
 		
 		pOnCreateSceneCallback.onCreateSceneFinished(this.mScene);
 	}
@@ -231,7 +274,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 
 		t.Populate(this.mEngine, mScene);
 		p.Populate(this.mEngine, mScene);
-		plat.Populate(this.mEngine, mScene);
+		//plat.Populate(this.mEngine, mScene);
 
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
 

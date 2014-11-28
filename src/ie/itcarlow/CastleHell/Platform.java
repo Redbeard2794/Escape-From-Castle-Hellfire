@@ -16,7 +16,7 @@ public class Platform {
 	private ITextureRegion platformTextureRegion;
 	Sprite platformSprite;
 	
-	public Platform(Context c, TextureManager t)
+	public Platform(Context c, TextureManager t, int x, int y, int width, int height)
 	{
 		loadGFX(c, t);
 		platformX = 250;
@@ -40,4 +40,5 @@ public class Platform {
 	{
 		
 	}
+	public Sprite getSprite(){return platformSprite;}
 }
