@@ -7,7 +7,6 @@ import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.Scene;
-import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
@@ -23,6 +22,7 @@ import org.xml.sax.Attributes;
 
 import android.content.Context;
 import android.view.MotionEvent;
+import android.widget.Toast;
 
 public class Main extends BaseGameActivity implements IUpdateHandler
 {
@@ -66,8 +66,10 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	//Platform plat;
 	
 	Context c = this;
+	//List listOfPlatforms = new Vector();
+	BitmapTextureAtlas platText;
+	public ITextureRegion platform1_region;
 	
-
 
 	@Override
 	public EngineOptions onCreateEngineOptions()
@@ -92,14 +94,10 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	private void loadGfx()
 	{
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
+		platText = new BitmapTextureAtlas(getTextureManager(),120,60);
+		platform1_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(platText, this, "plat2.png",0,0);
+		platText.load();
 
-		// playerAnimatedSprite = new BitmapTextureAtlas(getTextureManager(),
-		// 542,
-		// 73);
-		// playerTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory
-		// .createTiledFromAsset(playerAnimatedSprite, this.getAssets(),
-		// "PlayerRightFixed.png", 0, 0, 11, 1);
-		// playerAnimatedSprite.load();
 		backgroundTexture = new BitmapTextureAtlas(getTextureManager(),720,480);
 		backgroundTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(backgroundTexture,
 				this, "Background1.png",0,0);
@@ -133,23 +131,33 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	{
 
 		this.mScene = new Scene();
+		
 		//this.mScene.setBackground(new Background(255, 0, 0));
 		// register this activity as a scene touch listener
 		// this.mScene.setOnSceneTouchListener(this);
-		//final LevelLoader levelLoader = new LevelLoader();
-		//levelLoader.setAssetBasePath("level/");
+
 		
 		//built in levelloader class
 		final LevelLoader levelLoader = new LevelLoader();
 		levelLoader.setAssetBasePath("level/");
 		
-		//levelLoader.registerEntityLoader(TAG_ENTITY, new IEntityLoader()
-		//Need this version of registerEntityLoader.....I think
-		//Also need to modify the platform constructor so it takes:
-		//x, y, width and height
-		//means i will have to modify the example code a bit to make it work
-		//The example code just draws an animated sprite here. All it needs before hand is the texture region
-		//so that will take a bit of fiddling
+		levelLoader.registerEntityLoader(LevelConstants.TAG_LEVEL, new IEntityLoader() {
+			@Override
+			public IEntity onLoadEntity(final String pEntityName, final Attributes pAttributes) {
+			final int width = SAXUtils.getIntAttributeOrThrow(pAttributes, LevelConstants.TAG_LEVEL_ATTRIBUTE_WIDTH);
+			final int height = SAXUtils.getIntAttributeOrThrow(pAttributes, LevelConstants.TAG_LEVEL_ATTRIBUTE_HEIGHT);
+			Main.this.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Toast.makeText(Main.this, "Welcome to Castle Hellfire", Toast.LENGTH_LONG).show();
+			//Toast.makeText(Main.this, "Loaded level with width=" + width + " and height=" + height + ".", Toast.LENGTH_LONG).show();
+			}
+			});
+			return Main.this.mScene;
+			}
+			});
+		
+		
 		
 		levelLoader.registerEntityLoader(TAG_ENTITY, new IEntityLoader() {
 			
@@ -160,35 +168,31 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			final int width = SAXUtils.getIntAttributeOrThrow(pAttributes, TAG_ENTITY_ATTRIBUTE_WIDTH);
 			final int height = SAXUtils.getIntAttributeOrThrow(pAttributes, TAG_ENTITY_ATTRIBUTE_HEIGHT);
 			final String type = SAXUtils.getAttributeOrThrow(pAttributes, TAG_ENTITY_ATTRIBUTE_TYPE);
-//			final VertexBufferObjectManager vertexBufferObjectManager = LevelLoaderExample.this.getVertexBufferObjectManager();
+
 //			final AnimatedSprite face;//replace with sprite
 			
-			
+			final VertexBufferObjectManager vertexBufferObjectManager = Main.this.getVertexBufferObjectManager();
 			
 			final Platform spr;
-			//Dont declare it here. Create an empty list/array of platform objects 
-			//and add a new one here(so we can update it and call populate methods later)
-			//list tutorial http://tutorials.jenkov.com/java-collections/list.html
+			final Sprite pla;
+
 			if(type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM)) {
-				spr = new Platform(c,getTextureManager(),x, y, width, height);
+				//spr = new Platform(c,getTextureManager(),x, y, width, height);
+				pla = new Sprite(x,y, width,height,platform1_region,vertexBufferObjectManager);
+				pla.setZIndex(10);
 			}
-//			} else if(type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_CIRCLE)) {
-//			face = new AnimatedSprite(x, y, width, height, LevelLoaderExample.this.mCircleFaceTextureRegion, vertexBufferObjectManager);
-//			} else if(type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_TRIANGLE)) {
-//			face = new AnimatedSprite(x, y, width, height, LevelLoaderExample.this.mTriangleFaceTextureRegion, vertexBufferObjectManager);
-//			} else if(type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_HEXAGON)) {
-//			face = new AnimatedSprite(x, y, width, height, LevelLoaderExample.this.mHexagonFaceTextureRegion, vertexBufferObjectManager);
-//			} 
 			else {
 			throw new IllegalArgumentException();
 			}
-//			face.animate(200);
-			//spr.Populate(c, mScene);
-			return spr.getSprite();//get the platform sprite(a get method) and return it
+
+			//spr.Populate(c, mScene);//need to tell it to populate
+			//return spr.getSprite();
+			return pla;
+			//return spr.getSprite();
 			}
 			});
 		
-		
+		levelLoader.loadLevelFromAsset(this.getAssets(), "level1.lvl");
 		pOnCreateSceneCallback.onCreateSceneFinished(this.mScene);
 	}
 
@@ -201,6 +205,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 
 		backgroundSprite = new Sprite(0,0,backgroundTextureRegion,this.mEngine.getVertexBufferObjectManager());
 		mScene.attachChild(backgroundSprite);
+		mScene.sortChildren();
 		rightArrowSprite = new Sprite(530, 390, ArrowTextureRegion,
 				this.mEngine.getVertexBufferObjectManager())
 		{

@@ -34,6 +34,7 @@ public class Platform {
 	{
 		platformSprite = new Sprite(platformX, platformY, platformTextureRegion,
 				c.getVertexBufferObjectManager());
+		platformSprite.setZIndex(10);
 		s.attachChild(platformSprite);
 	}
 	public void Update()
@@ -41,4 +42,5 @@ public class Platform {
 		
 	}
 	public Sprite getSprite(){return platformSprite;}
+	public void setSprite(Sprite sp){platformSprite = sp;}
 }
