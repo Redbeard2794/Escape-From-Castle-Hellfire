@@ -69,6 +69,7 @@ public class Player
 	public void setFaceRight(boolean b){faceRight = b;}
 	public boolean getFaceLeft(){return faceLeft;}
 	public void setFaceLeft(boolean b){faceLeft = b;}
+	public AnimatedSprite getSprite(){return playerSprite;}
 
 	private void loadGFX(Context c, TextureManager t)
 	{

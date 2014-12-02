@@ -69,12 +69,14 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	//List listOfPlatforms = new Vector();
 	BitmapTextureAtlas platText;
 	public ITextureRegion platform1_region;
+	Camera camera;
 	
 
 	@Override
 	public EngineOptions onCreateEngineOptions()
 	{
-		final Camera camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+		Camera camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+		//camera.setCenter(CAMERA_WIDTH/2, CAMERA_HEIGHT/2);
 
 		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_SENSOR,
 				new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), camera);
@@ -122,6 +124,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 
 		t = new ProximityTrap(200, 50, this, getTextureManager());
 		p = new Player(this, getTextureManager());
+		
 		//plat = new Platform(this,getTextureManager());
 	}
 
@@ -279,8 +282,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 
 		t.Populate(this.mEngine, mScene);
 		p.Populate(this.mEngine, mScene);
+		
 		//plat.Populate(this.mEngine, mScene);
-
+		//camera.setCenter(p.getPlayerX(), p.getPlayerY());
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
 
 	}
@@ -289,7 +293,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	public void onUpdate(float pSecondsElapsed)
 	{
 		// TODO Auto-generated method stub
-
+		//camera.setChaseEntity(p.getSprite());
+		//camera.setCenter(camera.getCenterX()+1, camera.getCenterY());
+		
 		p.Update();
 
 	}
