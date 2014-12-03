@@ -1,6 +1,7 @@
 package ie.itcarlow.CastleHell;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
@@ -70,16 +71,18 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	BitmapTextureAtlas platText;
 	public ITextureRegion platform1_region;
 	Camera camera;
-	
+	SmoothCamera mSmoothCamera;
+	float prevX;
 
 	@Override
 	public EngineOptions onCreateEngineOptions()
 	{
-		Camera camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+		//Camera camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
 		//camera.setCenter(CAMERA_WIDTH/2, CAMERA_HEIGHT/2);
+		mSmoothCamera = new SmoothCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT, 30, 0, 1.0f);
 
 		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_SENSOR,
-				new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), camera);
+				new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), mSmoothCamera);
 	}
 
 	@Override
@@ -221,8 +224,10 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		        switch (myEventAction) 
 		        {
 		          case MotionEvent.ACTION_DOWN:{
+		        	  prevX = p.getPlayerX();
 		        	  p.setMoveRight(true);
-
+		        	  mSmoothCamera.setChaseEntity(p.getCurrentSprite());
+		        	  
 		        	   //mScene.setBackground(new Background(0, 255, 0));
 		        	   break;}
 		          case MotionEvent.ACTION_MOVE: {
@@ -232,6 +237,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		        	   p.setMoveRight(false);
 			        	  p.setFaceRight(true);
 			        	  p.setFaceLeft(false);
+			        	  mSmoothCamera.setChaseEntity(p.getCurrentSprite());
 		        	   //mScene.setBackground(new Background(255, 0, 0));
 		                break;}
 		        }
@@ -254,17 +260,19 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		        switch (myEventAction) 
 		        {
 		          case MotionEvent.ACTION_DOWN:{
+		        	  prevX = p.getPlayerX();
 		        	  p.setMoveLeft(true);
-
+		        	  mSmoothCamera.setChaseEntity(p.getCurrentSprite());
 		        	   //mScene.setBackground(new Background(0, 0, 255));
 		        	   break;}
 		          case MotionEvent.ACTION_MOVE: {
 
 		            	break;}
 		           case MotionEvent.ACTION_UP:{
-		        	   p.setMoveLeft(false);
+		        	   	  p.setMoveLeft(false);
 			        	  p.setFaceRight(false);
 			        	  p.setFaceLeft(true);
+			        	  mSmoothCamera.setChaseEntity(p.getCurrentSprite());
 		        	   //mScene.setBackground(new Background(255, 0, 0));
 		                break;}
 		        }
@@ -283,6 +291,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		t.Populate(this.mEngine, mScene);
 		p.Populate(this.mEngine, mScene);
 		
+		
+		
 		//plat.Populate(this.mEngine, mScene);
 		//camera.setCenter(p.getPlayerX(), p.getPlayerY());
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
@@ -297,7 +307,15 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		//camera.setCenter(camera.getCenterX()+1, camera.getCenterY());
 		
 		p.Update();
-
+		//mSmoothCamera.setCenter(p.getPlayerX(), p.getPlayerY());
+		if (p.getPlayerX()>prevX)
+		{
+			rightArrowSprite.setX(rightArrowSprite.getX()+0.7f);
+			leftArrowSprite.setX(leftArrowSprite.getX()+0.7f);
+			//rightArrowSprite.setX(p.getPlayerX()+280);
+			prevX = p.getPlayerX();
+		}
+		
 	}
 
 	@Override

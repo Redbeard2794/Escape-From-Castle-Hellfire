@@ -38,6 +38,8 @@ public class Player
 	private BitmapTextureAtlas playerLeftIdleTexture;
 	private ITiledTextureRegion playerLeftIdleTiledTextureRegion;
 	AnimatedSprite playerLeftIdleSprite;
+	
+	AnimatedSprite currentSprite;
 
 	public Player(Context c, TextureManager t)
 	{
@@ -69,7 +71,7 @@ public class Player
 	public void setFaceRight(boolean b){faceRight = b;}
 	public boolean getFaceLeft(){return faceLeft;}
 	public void setFaceLeft(boolean b){faceLeft = b;}
-	public AnimatedSprite getSprite(){return playerSprite;}
+	public AnimatedSprite getCurrentSprite(){return currentSprite;}
 
 	private void loadGFX(Context c, TextureManager t)
 	{
@@ -144,6 +146,7 @@ public class Player
 			playerRightIdleSprite.setVisible(false);
 			playerLeftIdleSprite.setVisible(false);
 			playerX+=1.5;
+			currentSprite = playerSprite;
 		}
 		else
 		{
@@ -156,6 +159,7 @@ public class Player
 			playerRightIdleSprite.setVisible(false);
 			playerLeftIdleSprite.setVisible(false);
 			playerX-=1.5;
+			currentSprite = playerLeftSprite;
 		}
 		else
 		{
@@ -165,11 +169,13 @@ public class Player
 		{
 			playerRightIdleSprite.setVisible(true);
 			playerLeftIdleSprite.setVisible(false);
+			currentSprite = playerRightIdleSprite;
 		}
 		if(faceLeft == true && moveRight == false && moveLeft == false)
 		{
 			playerLeftIdleSprite.setVisible(true);
 			playerRightIdleSprite.setVisible(false);
+			currentSprite = playerLeftIdleSprite;
 		}
 		//playerX+=1;
 	}
