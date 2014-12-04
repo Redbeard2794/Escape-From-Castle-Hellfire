@@ -15,12 +15,16 @@ public class Platform {
 	private BitmapTextureAtlas platformTexture;
 	private ITextureRegion platformTextureRegion;
 	Sprite platformSprite;
+	float w;
+	float h;
 	
 	public Platform(Context c, TextureManager t, int x, int y, int width, int height)
 	{
 		loadGFX(c, t);
-		platformX = 250;
-		platformY = 327;
+		platformX = x;
+		platformY = y;
+		w=width;
+		h=height;
 	}
 	
 	private void loadGFX(Context c, TextureManager t)
@@ -32,7 +36,7 @@ public class Platform {
 	}
 	public void Populate(Engine c, Scene s)
 	{
-		platformSprite = new Sprite(platformX, platformY, platformTextureRegion,
+		platformSprite = new Sprite(platformX, platformY, w, h, platformTextureRegion,
 				c.getVertexBufferObjectManager());
 		platformSprite.setZIndex(10);
 		s.attachChild(platformSprite);

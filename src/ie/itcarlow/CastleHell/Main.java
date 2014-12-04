@@ -1,5 +1,7 @@
 package ie.itcarlow.CastleHell;
 
+import java.util.Vector;
+
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.handler.IUpdateHandler;
@@ -8,6 +10,7 @@ import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.Scene;
+import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
@@ -67,19 +70,20 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	//Platform plat;
 	
 	Context c = this;
-	//List listOfPlatforms = new Vector();
+	Vector<Platform> listOfPlatforms = new Vector<Platform>();
 	BitmapTextureAtlas platText;
 	public ITextureRegion platform1_region;
 	Camera camera;
 	SmoothCamera mSmoothCamera;
-	float prevX;
-
+	float prevX = 250;
+	
+	
 	@Override
 	public EngineOptions onCreateEngineOptions()
 	{
 		//Camera camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
 		//camera.setCenter(CAMERA_WIDTH/2, CAMERA_HEIGHT/2);
-		mSmoothCamera = new SmoothCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT, 30, 0, 1.0f);
+		mSmoothCamera = new SmoothCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT, 100, 0, 1.0f);
 
 		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_SENSOR,
 				new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), mSmoothCamera);
@@ -98,15 +102,18 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 
 	private void loadGfx()
 	{
+		
+		
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 		platText = new BitmapTextureAtlas(getTextureManager(),120,60);
 		platform1_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(platText, this, "plat2.png",0,0);
 		platText.load();
 
-		backgroundTexture = new BitmapTextureAtlas(getTextureManager(),720,480);
+		backgroundTexture = new BitmapTextureAtlas(getTextureManager(),3500,480);
 		backgroundTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(backgroundTexture,
-				this, "Background1.png",0,0);
+				this, "level1Background.png",0,0);
 		backgroundTexture.load();
+		
 		
 		ArrowTexture = new BitmapTextureAtlas(getTextureManager(), 178, 84);// 237,112
 		ArrowTextureRegion = BitmapTextureAtlasTextureRegionFactory
@@ -183,25 +190,36 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			final Sprite pla;
 
 			if(type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM)) {
-				//spr = new Platform(c,getTextureManager(),x, y, width, height);
-				pla = new Sprite(x,y, width,height,platform1_region,vertexBufferObjectManager);
-				pla.setZIndex(10);
+				spr = new Platform(c,getTextureManager(),x, y, width, height);
+				listOfPlatforms.add(spr);
+				//pla = new Sprite(x,y, width,height,platform1_region,vertexBufferObjectManager);
+				//pla.setZIndex(10);
+				//populatePlatforms(spr);
+				
 			}
 			else {
 			throw new IllegalArgumentException();
 			}
 
 			//spr.Populate(c, mScene);//need to tell it to populate
-			//return spr.getSprite();
-			return pla;
+			return spr.getSprite();//move this into the if where we create the platform. 
+			//return pla;
 			//return spr.getSprite();
 			}
 			});
 		
 		levelLoader.loadLevelFromAsset(this.getAssets(), "level1.lvl");
+		populatePlatforms();
 		pOnCreateSceneCallback.onCreateSceneFinished(this.mScene);
 	}
-
+	public void populatePlatforms()//Platform plat)
+	{
+		for(int i=0;i<listOfPlatforms.size();i++)
+		{
+			listOfPlatforms.get(i).Populate(this.mEngine, mScene);
+		}
+		//plat.Populate(this.mEngine, mScene);
+	}
 	@Override
 	public void onPopulateScene(Scene pScene,
 			OnPopulateSceneCallback pOnPopulateSceneCallback) throws Exception
@@ -209,7 +227,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		// TODO Auto-generated method stub
 
 
-		backgroundSprite = new Sprite(0,0,backgroundTextureRegion,this.mEngine.getVertexBufferObjectManager());
+		backgroundSprite = new Sprite(-300,0,backgroundTextureRegion,this.mEngine.getVertexBufferObjectManager());
 		mScene.attachChild(backgroundSprite);
 		mScene.sortChildren();
 		rightArrowSprite = new Sprite(530, 390, ArrowTextureRegion,
@@ -310,9 +328,19 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		//mSmoothCamera.setCenter(p.getPlayerX(), p.getPlayerY());
 		if (p.getPlayerX()>prevX)
 		{
-			rightArrowSprite.setX(rightArrowSprite.getX()+0.7f);
-			leftArrowSprite.setX(leftArrowSprite.getX()+0.7f);
+			rightArrowSprite.setX(p.getPlayerX()+200);
+			leftArrowSprite.setX(p.getPlayerX()-330);
 			//rightArrowSprite.setX(p.getPlayerX()+280);
+			jumpButtonSprite.setX(p.getPlayerX()-130);
+			prevX = p.getPlayerX();
+		}
+		
+		else if (p.getPlayerX()<prevX)
+		{
+			rightArrowSprite.setX(p.getPlayerX()+200);
+			leftArrowSprite.setX(p.getPlayerX()-330);
+			//rightArrowSprite.setX(p.getPlayerX()+280);
+			jumpButtonSprite.setX(p.getPlayerX()-130);
 			prevX = p.getPlayerX();
 		}
 		
