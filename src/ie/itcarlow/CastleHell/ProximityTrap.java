@@ -14,10 +14,13 @@ public class ProximityTrap
 	private Sprite mSprite;
 	private BitmapTextureAtlas trapTexture;
 	private ITextureRegion trapTextureRegion;
+	float posX,posY;
 
 	public ProximityTrap(float xPos, float yPos, Context c, TextureManager t)
 	{
 		loadGFX(c, t);
+		posX = xPos;
+		posY = yPos;
 	}
 
 	private void loadGFX(Context c, TextureManager t)
@@ -30,8 +33,9 @@ public class ProximityTrap
 
 	public void Populate(Engine c, Scene s)
 	{
-		mSprite = new Sprite(53, 51, trapTextureRegion,
+		mSprite = new Sprite(posX, posY, trapTextureRegion,
 				c.getVertexBufferObjectManager());
+		mSprite.setZIndex(10);
 		s.attachChild(mSprite);
 
 	}
@@ -40,4 +44,6 @@ public class ProximityTrap
 	{
 
 	}
+	
+	public Sprite getSprite(){return mSprite;}
 }
