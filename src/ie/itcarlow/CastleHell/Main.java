@@ -62,6 +62,14 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	private BitmapTextureAtlas backgroundTexture;
 	private ITextureRegion backgroundTextureRegion;
 	Sprite backgroundSprite;
+	
+	private BitmapTextureAtlas splashTexture;
+	private ITextureRegion splashTextureRegion;
+	Sprite splashSprite;
+	
+	private BitmapTextureAtlas tapToPlayTexture;
+	private ITextureRegion tapToPlayTextureRegion;
+	Sprite tapToPlaySprite;
 
 	Player p;
 
@@ -76,7 +84,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	Camera camera;
 	SmoothCamera mSmoothCamera;
 	float prevX = 250;
-	
+	byte SPLASH = 0, MENU = 1, GAME = 2, END = 3;
+	int gameState = SPLASH;
 	
 	@Override
 	public EngineOptions onCreateEngineOptions()
@@ -108,6 +117,14 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		platText = new BitmapTextureAtlas(getTextureManager(),120,60);
 		platform1_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(platText, this, "plat2.png",0,0);
 		platText.load();
+		
+		splashTexture = new BitmapTextureAtlas(getTextureManager(),517,198);
+		splashTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashTexture,this,"SplashScreen.png",0,0);
+		splashTexture.load();
+		
+		tapToPlayTexture = new BitmapTextureAtlas(getTextureManager(),159,30);
+		tapToPlayTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(tapToPlayTexture,this,"tapToPlay.png",0,0);
+		tapToPlayTexture.load();
 
 		backgroundTexture = new BitmapTextureAtlas(getTextureManager(),3500,480);
 		backgroundTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(backgroundTexture,
@@ -217,6 +234,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		for(int i=0;i<listOfPlatforms.size();i++)
 		{
 			listOfPlatforms.get(i).Populate(this.mEngine, mScene);
+			listOfPlatforms.get(i).getSprite().setVisible(false);
 		}
 		//plat.Populate(this.mEngine, mScene);
 	}
@@ -225,9 +243,49 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			OnPopulateSceneCallback pOnPopulateSceneCallback) throws Exception
 	{
 		// TODO Auto-generated method stub
+		//if(gameState == SPLASH)
+		//{
 
+			splashSprite = new Sprite(CAMERA_WIDTH/7,CAMERA_HEIGHT/3,splashTextureRegion,this.mEngine.getVertexBufferObjectManager());
+			splashSprite.setZIndex(11);
+			
+			mScene.attachChild(splashSprite);
+			
+			tapToPlaySprite = new Sprite(CAMERA_WIDTH/2.5f,CAMERA_HEIGHT-100,tapToPlayTextureRegion,this.mEngine.getVertexBufferObjectManager())
+			{
+				@Override
+				public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
+						final float pTouchAreaLocalX, final float pTouchAreaLocalY)
+				{
+					int myEventAction = pSceneTouchEvent.getAction();
 
+			        switch (myEventAction) 
+			        {
+			          case MotionEvent.ACTION_DOWN:{
+			        	   break;}
+			          case MotionEvent.ACTION_MOVE: {
+			            	break;}
+			           case MotionEvent.ACTION_UP:{
+			        	   gameState = GAME;
+			       			for(int i=0;i<listOfPlatforms.size();i++)
+			       			{
+			       				listOfPlatforms.get(i).getSprite().setVisible(true);
+			       			}
+			       			tapToPlaySprite.setVisible(false);
+			       			splashSprite.setVisible(false);
+			                break;}
+			        }
+					return true;
+				}
+			};
+			tapToPlaySprite.setZIndex(11);
+			mScene.attachChild(tapToPlaySprite);
+			this.mScene.registerTouchArea(tapToPlaySprite);
+		//}
+		//else if (gameState == GAME)
+		//{
 		backgroundSprite = new Sprite(-300,0,backgroundTextureRegion,this.mEngine.getVertexBufferObjectManager());
+		backgroundSprite.setZIndex(7);
 		mScene.attachChild(backgroundSprite);
 		mScene.sortChildren();
 		rightArrowSprite = new Sprite(530, 390, ArrowTextureRegion,
@@ -309,7 +367,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		t.Populate(this.mEngine, mScene);
 		p.Populate(this.mEngine, mScene);
 		
-		
+		//Toast.makeText(Main.this, "game state = " + gameState, Toast.LENGTH_LONG).show();
+		//}
 		
 		//plat.Populate(this.mEngine, mScene);
 		//camera.setCenter(p.getPlayerX(), p.getPlayerY());
@@ -323,29 +382,59 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		// TODO Auto-generated method stub
 		//camera.setChaseEntity(p.getSprite());
 		//camera.setCenter(camera.getCenterX()+1, camera.getCenterY());
-		
-		p.Update();
-		//mSmoothCamera.setCenter(p.getPlayerX(), p.getPlayerY());
-		if (p.getPlayerX()>prevX)
+		setSpritesForGameState();
+		if(gameState == GAME)
 		{
-			rightArrowSprite.setX(p.getPlayerX()+200);
-			leftArrowSprite.setX(p.getPlayerX()-330);
-			//rightArrowSprite.setX(p.getPlayerX()+280);
-			jumpButtonSprite.setX(p.getPlayerX()-130);
-			prevX = p.getPlayerX();
+			p.Update();
+			//mSmoothCamera.setCenter(p.getPlayerX(), p.getPlayerY());
+			if (p.getPlayerX()>prevX)
+			{
+				rightArrowSprite.setX(p.getPlayerX()+200);
+				leftArrowSprite.setX(p.getPlayerX()-330);
+				//rightArrowSprite.setX(p.getPlayerX()+280);
+				jumpButtonSprite.setX(p.getPlayerX()-130);
+				prevX = p.getPlayerX();
+			}
+		
+			else if (p.getPlayerX()<prevX)
+			{
+				rightArrowSprite.setX(p.getPlayerX()+200);
+				leftArrowSprite.setX(p.getPlayerX()-330);
+				//rightArrowSprite.setX(p.getPlayerX()+280);
+				jumpButtonSprite.setX(p.getPlayerX()-130);
+				prevX = p.getPlayerX();
+			}
 		}
-		
-		else if (p.getPlayerX()<prevX)
+		if (gameState == SPLASH)
 		{
-			rightArrowSprite.setX(p.getPlayerX()+200);
-			leftArrowSprite.setX(p.getPlayerX()-330);
-			//rightArrowSprite.setX(p.getPlayerX()+280);
-			jumpButtonSprite.setX(p.getPlayerX()-130);
-			prevX = p.getPlayerX();
+			splashSprite.setVisible(true);
+			tapToPlaySprite.setVisible(true);
+			//p.getCurrentSprite().setVisible(false);
+			backgroundSprite.setVisible(true);
+			rightArrowSprite.setVisible(false);
+			leftArrowSprite.setVisible(false);
+			jumpButtonSprite.setVisible(false);
+			p.getCurrentSprite().setVisible(false);
+			rightArrowSprite.setZIndex(4);
+		}
+		else if (gameState == GAME)
+		{
+			splashSprite.setVisible(false);
+			tapToPlaySprite.setVisible(false);
+			//p.getCurrentSprite().setVisible(true);
+			backgroundSprite.setVisible(true);
+			rightArrowSprite.setVisible(true);
+			leftArrowSprite.setVisible(true);
+			jumpButtonSprite.setVisible(true);
+			rightArrowSprite.setZIndex(12);
+			p.getCurrentSprite().setVisible(true);
 		}
 		
 	}
+	public void setSpritesForGameState()
+	{
 
+	}
 	@Override
 	public void reset()
 	{

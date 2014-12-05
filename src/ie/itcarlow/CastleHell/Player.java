@@ -124,6 +124,11 @@ public class Player
 				c.getVertexBufferObjectManager());
 		playerLeftIdleSprite.animate(200);
 		s.attachChild(playerLeftIdleSprite);
+		
+		playerRightIdleSprite.setVisible(false);
+		playerLeftIdleSprite.setVisible(false);
+		
+		currentSprite = playerSprite;
 	}
 
 	public void Update()
@@ -142,6 +147,7 @@ public class Player
 		if(moveRight==true)
 		{
 			playerSprite.setVisible(true);
+			currentSprite = playerSprite;
 			//playerLeftSprite.setVisible(false);
 			playerRightIdleSprite.setVisible(false);
 			playerLeftIdleSprite.setVisible(false);
@@ -171,7 +177,7 @@ public class Player
 			playerLeftIdleSprite.setVisible(false);
 			currentSprite = playerRightIdleSprite;
 		}
-		if(faceLeft == true && moveRight == false && moveLeft == false)
+		else if(faceLeft == true && moveRight == false && moveLeft == false)
 		{
 			playerLeftIdleSprite.setVisible(true);
 			playerRightIdleSprite.setVisible(false);
