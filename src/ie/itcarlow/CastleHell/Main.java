@@ -195,8 +195,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		// register this activity as a scene touch listener
 		// this.mScene.setOnSceneTouchListener(this);
 
-		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, -17), false);
-		//this.mScene.registerUpdateHandler(physicsWorld);
+		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, 17), false);
+		this.mScene.registerUpdateHandler(physicsWorld);
 
 		//built in levelloader class
 		final LevelLoader levelLoader = new LevelLoader();
@@ -504,7 +504,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		mScene.attachChild(jumpButtonSprite);
 
 		this.mEngine.registerUpdateHandler(this);
-		this.mEngine.registerUpdateHandler(physicsWorld);
 
 		//t.Populate(this.mEngine, mScene);
 		p.Populate(this.mEngine, mScene,physicsWorld);

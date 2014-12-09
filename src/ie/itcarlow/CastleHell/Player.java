@@ -136,10 +136,37 @@ public class Player
 		currentSprite = playerSprite;
 
 		FixtureDef FIXTURE_DEF = PhysicsFactory.createFixtureDef(0,0.1f,0.5f);
-		body = PhysicsFactory.createBoxBody(p,currentSprite, BodyDef.BodyType.DynamicBody,FIXTURE_DEF);
+		body = PhysicsFactory.createBoxBody(p,playerSprite, BodyDef.BodyType.DynamicBody,FIXTURE_DEF);
 		body.setUserData("player");
 
-		p.registerPhysicsConnector(new PhysicsConnector(currentSprite,body,true,true)
+		p.registerPhysicsConnector(new PhysicsConnector(playerSprite,body,true,true)
+		{
+			@Override
+		public  void onUpdate(float pSecondsElapsed)
+			{
+				super.onUpdate(pSecondsElapsed);
+				Move();
+			}
+		});
+		p.registerPhysicsConnector(new PhysicsConnector(playerLeftSprite,body,true,true)
+		{
+			@Override
+		public  void onUpdate(float pSecondsElapsed)
+			{
+				super.onUpdate(pSecondsElapsed);
+				Move();
+			}
+		});
+		p.registerPhysicsConnector(new PhysicsConnector(playerRightIdleSprite,body,true,true)
+		{
+			@Override
+		public  void onUpdate(float pSecondsElapsed)
+			{
+				super.onUpdate(pSecondsElapsed);
+				Move();
+			}
+		});
+		p.registerPhysicsConnector(new PhysicsConnector(playerLeftIdleSprite,body,true,true)
 		{
 			@Override
 		public  void onUpdate(float pSecondsElapsed)
@@ -149,60 +176,52 @@ public class Player
 			}
 		});
 	}
+	
 
 	public void Move()
 	{
-		//playerSprite.setX(playerX);
-		//playerSprite.setY(playerY);
-		//playerLeftSprite.setX(playerX);
-		//playerLeftSprite.setY(playerY);
-		//playerRightIdleSprite.setX(playerX);
-		//playerRightIdleSprite.setY(playerY);
-		//playerLeftIdleSprite.setX(playerX);
-		//playerLeftIdleSprite.setY(playerY);
-		//playerSprite.setVisible(false);
-		// playerX+=1;
-		// this.setX(this.getX()+1);
 		if(moveRight)
 		{
-			//playerSprite.setVisible(true);
-			//currentSprite = playerSprite;
-			//playerLeftSprite.setVisible(false);
-			//playerRightIdleSprite.setVisible(false);
-			//playerLeftIdleSprite.setVisible(false);
-			body.setLinearVelocity(new Vector2(50, body.getLinearVelocity().y));
-			//currentSprite = playerSprite;
+			body.setLinearVelocity(1, body.getLinearVelocity().y);
+			
+			playerSprite.setVisible(true);
+			playerLeftSprite.setVisible(false);
+			playerRightIdleSprite.setVisible(false);
+			playerLeftIdleSprite.setVisible(false);
+			currentSprite = playerSprite;
 		}
 		else
 		{
-			//playerSprite.setVisible(false);
+			playerSprite.setVisible(false);
 		}
 		if(moveLeft)
 		{
-			//playerSprite.setVisible(false);
-			//playerLeftSprite.setVisible(true);
-			//playerRightIdleSprite.setVisible(false);
-			//playerLeftIdleSprite.setVisible(false);
-			//playerX-=1.5;
-			//currentSprite = playerLeftSprite;
+			playerSprite.setVisible(false);
+			playerLeftSprite.setVisible(true);
+			playerRightIdleSprite.setVisible(false);
+			playerLeftIdleSprite.setVisible(false);
+			body.setLinearVelocity(new Vector2(-5, body.getLinearVelocity().y));
+			currentSprite = playerLeftSprite;
 		}
 		else
 		{
-			//playerLeftSprite.setVisible(false);
+			playerLeftSprite.setVisible(false);
 		}
 		if(faceRight && !moveRight && !moveLeft)
 		{
-			//playerRightIdleSprite.setVisible(true);
-			//playerLeftIdleSprite.setVisible(false);
-			//currentSprite = playerRightIdleSprite;
+			playerRightIdleSprite.setVisible(true);
+			playerLeftIdleSprite.setVisible(false);
+			currentSprite = playerRightIdleSprite;
 		}
 		else if(faceLeft && !moveRight && !moveLeft)
 		{
-			//playerLeftIdleSprite.setVisible(true);
-			//playerRightIdleSprite.setVisible(false);
-			//currentSprite = playerLeftIdleSprite;
+			playerLeftIdleSprite.setVisible(true);
+			playerRightIdleSprite.setVisible(false);
+			currentSprite = playerLeftIdleSprite;
 		}
-		//playerX+=1;
+		playerX = body.getPosition().x;
+		playerY = body.getPosition().y;
 	}
 
+	
 }
