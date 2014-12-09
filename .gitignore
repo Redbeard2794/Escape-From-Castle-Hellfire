@@ -1,2 +1,6 @@
 /gen
 /bin
+/out
+/.idea
+*.eml
+*.iml

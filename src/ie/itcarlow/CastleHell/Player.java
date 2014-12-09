@@ -1,13 +1,20 @@
 package ie.itcarlow.CastleHell;
 
+import android.content.Context;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import org.andengine.engine.Engine;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.AnimatedSprite;
+import org.andengine.extension.physics.box2d.PhysicsConnector;
+import org.andengine.extension.physics.box2d.PhysicsFactory;
+import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.opengl.texture.TextureManager;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
-import android.content.Context;
 
 public class Player
 {
@@ -16,30 +23,26 @@ public class Player
 	
 	// if true player is facing to the right, if false player is facing towards
 	// the left
-	boolean moveRight;
-	boolean moveLeft;
-	boolean faceRight;
-	boolean faceLeft;
+	private boolean moveRight;
+	private boolean moveLeft;
+	private boolean faceRight;
+	private boolean faceLeft;
 	private float playerX, playerY;
 	private float centreX, centreY;
 
-	private BitmapTextureAtlas playerTexture;
 	private ITiledTextureRegion playerTiledTextureRegion;
-	AnimatedSprite playerSprite;
-	
-	private BitmapTextureAtlas playerLeftTexture;
+	private AnimatedSprite playerSprite;
+
 	private ITiledTextureRegion playerLeftTiledTextureRegion;
-	AnimatedSprite playerLeftSprite;
-	
-	private BitmapTextureAtlas playerRightIdleTexture;
+	private AnimatedSprite playerLeftSprite;
+
 	private ITiledTextureRegion playerRightIdleTiledTextureRegion;
-	AnimatedSprite playerRightIdleSprite;
-	
-	private BitmapTextureAtlas playerLeftIdleTexture;
+	private AnimatedSprite playerRightIdleSprite;
+
 	private ITiledTextureRegion playerLeftIdleTiledTextureRegion;
-	AnimatedSprite playerLeftIdleSprite;
+	private AnimatedSprite playerLeftIdleSprite;
 	
-	AnimatedSprite currentSprite;
+	private AnimatedSprite currentSprite;
 
 	public Player(Context c, TextureManager t)
 	{
@@ -73,34 +76,36 @@ public class Player
 	public void setFaceLeft(boolean b){faceLeft = b;}
 	public AnimatedSprite getCurrentSprite(){return currentSprite;}
 
+	private Body body;
+
 	private void loadGFX(Context c, TextureManager t)
 	{
-		playerTexture = new BitmapTextureAtlas(t, 405, 80);
+		BitmapTextureAtlas playerTexture = new BitmapTextureAtlas(t, 405, 80);
 		playerTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory
 				.createTiledFromAsset(playerTexture, c.getAssets(),
 						"playerRightSheet.png", 0, 0, 9, 1);
 		playerTexture.load();
-		
-		playerLeftTexture = new BitmapTextureAtlas(t,405,80);
+
+		BitmapTextureAtlas playerLeftTexture = new BitmapTextureAtlas(t, 405, 80);
 		playerLeftTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory
 				.createTiledFromAsset(playerLeftTexture, c.getAssets(),
 						"playerLeftSheet.png", 0, 0, 9, 1);
 		playerLeftTexture.load();
-		
-		playerRightIdleTexture = new BitmapTextureAtlas(t, 672, 75);
+
+		BitmapTextureAtlas playerRightIdleTexture = new BitmapTextureAtlas(t, 672, 75);
 		playerRightIdleTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory
 				.createTiledFromAsset(playerRightIdleTexture, c.getAssets(),
 						"playerIdleRightSheet.png", 0, 0, 16, 1);
 		playerRightIdleTexture.load();
-		
-		playerLeftIdleTexture = new BitmapTextureAtlas(t, 672, 75);
+
+		BitmapTextureAtlas playerLeftIdleTexture = new BitmapTextureAtlas(t, 672, 75);
 		playerLeftIdleTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory
 				.createTiledFromAsset(playerLeftIdleTexture, c.getAssets(),
 						"playerIdleLeftSheet.png", 0, 0, 16, 1);
 		playerLeftIdleTexture.load();
 	}
 
-	public void Populate(Engine c, Scene s)
+	public void Populate(Engine c, Scene s,PhysicsWorld p)
 	{
 		playerSprite = new AnimatedSprite(playerX, playerY, playerTiledTextureRegion,
 				c.getVertexBufferObjectManager());
@@ -112,7 +117,7 @@ public class Player
 		playerLeftSprite.animate(250);
 		s.attachChild(playerLeftSprite);
 		
-		playerSprite.setVisible(false);
+		playerSprite.setVisible(true);
 		playerLeftSprite.setVisible(false);
 		
 		playerRightIdleSprite = new AnimatedSprite(playerX, playerY, playerRightIdleTiledTextureRegion,
@@ -129,59 +134,73 @@ public class Player
 		playerLeftIdleSprite.setVisible(false);
 		
 		currentSprite = playerSprite;
+
+		FixtureDef FIXTURE_DEF = PhysicsFactory.createFixtureDef(0,0.1f,0.5f);
+		body = PhysicsFactory.createBoxBody(p,currentSprite, BodyDef.BodyType.DynamicBody,FIXTURE_DEF);
+		body.setUserData("player");
+
+		p.registerPhysicsConnector(new PhysicsConnector(currentSprite,body,true,true)
+		{
+			@Override
+		public  void onUpdate(float pSecondsElapsed)
+			{
+				super.onUpdate(pSecondsElapsed);
+				Move();
+			}
+		});
 	}
 
-	public void Update()
+	public void Move()
 	{
-		playerSprite.setX(playerX);
-		playerSprite.setY(playerY);
-		playerLeftSprite.setX(playerX);
-		playerLeftSprite.setY(playerY);
-		playerRightIdleSprite.setX(playerX);
-		playerRightIdleSprite.setY(playerY);
-		playerLeftIdleSprite.setX(playerX);
-		playerLeftIdleSprite.setY(playerY);
+		//playerSprite.setX(playerX);
+		//playerSprite.setY(playerY);
+		//playerLeftSprite.setX(playerX);
+		//playerLeftSprite.setY(playerY);
+		//playerRightIdleSprite.setX(playerX);
+		//playerRightIdleSprite.setY(playerY);
+		//playerLeftIdleSprite.setX(playerX);
+		//playerLeftIdleSprite.setY(playerY);
 		//playerSprite.setVisible(false);
 		// playerX+=1;
 		// this.setX(this.getX()+1);
-		if(moveRight==true)
+		if(moveRight)
 		{
-			playerSprite.setVisible(true);
-			currentSprite = playerSprite;
+			//playerSprite.setVisible(true);
+			//currentSprite = playerSprite;
 			//playerLeftSprite.setVisible(false);
-			playerRightIdleSprite.setVisible(false);
-			playerLeftIdleSprite.setVisible(false);
-			playerX+=1.5;
-			currentSprite = playerSprite;
+			//playerRightIdleSprite.setVisible(false);
+			//playerLeftIdleSprite.setVisible(false);
+			body.setLinearVelocity(new Vector2(50, body.getLinearVelocity().y));
+			//currentSprite = playerSprite;
 		}
 		else
-		{
-			playerSprite.setVisible(false);
-		}
-		if(moveLeft==true)
 		{
 			//playerSprite.setVisible(false);
-			playerLeftSprite.setVisible(true);
-			playerRightIdleSprite.setVisible(false);
-			playerLeftIdleSprite.setVisible(false);
-			playerX-=1.5;
-			currentSprite = playerLeftSprite;
+		}
+		if(moveLeft)
+		{
+			//playerSprite.setVisible(false);
+			//playerLeftSprite.setVisible(true);
+			//playerRightIdleSprite.setVisible(false);
+			//playerLeftIdleSprite.setVisible(false);
+			//playerX-=1.5;
+			//currentSprite = playerLeftSprite;
 		}
 		else
 		{
-			playerLeftSprite.setVisible(false);
+			//playerLeftSprite.setVisible(false);
 		}
-		if(faceRight == true && moveRight == false && moveLeft == false)
+		if(faceRight && !moveRight && !moveLeft)
 		{
-			playerRightIdleSprite.setVisible(true);
-			playerLeftIdleSprite.setVisible(false);
-			currentSprite = playerRightIdleSprite;
+			//playerRightIdleSprite.setVisible(true);
+			//playerLeftIdleSprite.setVisible(false);
+			//currentSprite = playerRightIdleSprite;
 		}
-		else if(faceLeft == true && moveRight == false && moveLeft == false)
+		else if(faceLeft && !moveRight && !moveLeft)
 		{
-			playerLeftIdleSprite.setVisible(true);
-			playerRightIdleSprite.setVisible(false);
-			currentSprite = playerLeftIdleSprite;
+			//playerLeftIdleSprite.setVisible(true);
+			//playerRightIdleSprite.setVisible(false);
+			//currentSprite = playerLeftIdleSprite;
 		}
 		//playerX+=1;
 	}
