@@ -196,11 +196,12 @@ public class Player
 		}
 		if(moveLeft)
 		{
+			body.setLinearVelocity(-1, body.getLinearVelocity().y);
+			
 			playerSprite.setVisible(false);
 			playerLeftSprite.setVisible(true);
 			playerRightIdleSprite.setVisible(false);
 			playerLeftIdleSprite.setVisible(false);
-			body.setLinearVelocity(new Vector2(-5, body.getLinearVelocity().y));
 			currentSprite = playerLeftSprite;
 		}
 		else
@@ -219,8 +220,8 @@ public class Player
 			playerRightIdleSprite.setVisible(false);
 			currentSprite = playerLeftIdleSprite;
 		}
-		playerX = body.getPosition().x;
-		playerY = body.getPosition().y;
+		playerX = currentSprite.getX();
+		playerY = currentSprite.getY();
 	}
 
 	
