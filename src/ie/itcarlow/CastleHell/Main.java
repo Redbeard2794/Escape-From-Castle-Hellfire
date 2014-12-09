@@ -68,18 +68,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	private ITextureRegion tapToPlayTextureRegion;
 	private Sprite tapToPlaySprite;
 
-	private ITextureRegion playButtonTextureRegion;
-	private Sprite playButtonSprite;
-
-	private ITextureRegion optionsButtonTextureRegion;
-	private Sprite optionsButtonSprite;
-
-	private ITextureRegion quitButtonTextureRegion;
-	private Sprite quitButtonSprite;
-
 	private PhysicsWorld physicsWorld;
 	private Player p;
-
+	private Menu menu;
 	//ProximityTrap t;
 	
 	//Platform plat;
@@ -97,13 +88,11 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	private final byte MENU = 1;
 	private final byte GAME = 2;
 	byte END = 3;
-	private int gameState = SPLASH;
+	public int gameState = SPLASH;
 	
 	@Override
 	public EngineOptions onCreateEngineOptions()
 	{
-		//Camera camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
-		//camera.setCenter(CAMERA_WIDTH/2, CAMERA_HEIGHT/2);
 		mSmoothCamera = new SmoothCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT, 100, 0, 1.0f);
 
 		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_SENSOR,
@@ -145,20 +134,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		tapToPlayTexture.load();
 		//End Splash Screen Stuff
 		
-		//Menu Stuff
-		BitmapTextureAtlas playButtonTexture = new BitmapTextureAtlas(getTextureManager(), 199, 38);
-		playButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(playButtonTexture,this,"menuButtons/playButton.png",0,0);
-		playButtonTexture.load();
-
-		BitmapTextureAtlas optionsButtonTexture = new BitmapTextureAtlas(getTextureManager(), 199, 38);
-		optionsButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(optionsButtonTexture,this,"menuButtons/optionsButton.png",0,0);
-		optionsButtonTexture.load();
-
-		BitmapTextureAtlas quitButtonTexture = new BitmapTextureAtlas(getTextureManager(), 199, 38);
-		quitButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(quitButtonTexture,this,"menuButtons/quitButton.png",0,0);
-		quitButtonTexture.load();
-		//End Menu Stuff
-		
 		//Game Stuff
 		BitmapTextureAtlas arrowTexture = new BitmapTextureAtlas(getTextureManager(), 178, 84);
 		ArrowTextureRegion = BitmapTextureAtlasTextureRegionFactory
@@ -179,9 +154,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 
 		//t = new ProximityTrap(200, 50, this, getTextureManager());
 		p = new Player(this, getTextureManager());
+		menu = new Menu(this,getTextureManager());
 		//End Game Stuff
 		
-		//plat = new Platform(this,getTextureManager());
 	}
 
 	@Override
@@ -191,7 +166,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 
 		this.mScene = new Scene();
 		
-		//this.mScene.setBackground(new Background(255, 0, 0));
 		// register this activity as a scene touch listener
 		// this.mScene.setOnSceneTouchListener(this);
 
@@ -229,8 +203,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			final int width = SAXUtils.getIntAttributeOrThrow(pAttributes, TAG_ENTITY_ATTRIBUTE_WIDTH);
 			final int height = SAXUtils.getIntAttributeOrThrow(pAttributes, TAG_ENTITY_ATTRIBUTE_HEIGHT);
 			final String type = SAXUtils.getAttributeOrThrow(pAttributes, TAG_ENTITY_ATTRIBUTE_TYPE);
-
-//			final AnimatedSprite face;//replace with sprite
 			
 			final VertexBufferObjectManager vertexBufferObjectManager = Main.this.getVertexBufferObjectManager();
 			
@@ -248,16 +220,10 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 				listOfProximityTraps.add(trap);
 				return trap.getSprite();
 			}
-			//else {
-			//throw new IllegalArgumentException();
-			//}
 
-			//spr.Populate(c, mScene);//need to tell it to populate
 			else {
 				return null;//move this into the if where we create the platform. 
 			}
-			//return pla;
-			//return spr.getSprite();
 			}
 			});
 		
@@ -266,7 +232,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		populateProximityTraps();
 		pOnCreateSceneCallback.onCreateSceneFinished(this.mScene);
 	}
-	public void populatePlatforms()//Platform plat)
+	public void populatePlatforms()
 	{
 		int size = listOfPlatforms.size();
 		for(int i=0;i<size;i++)
@@ -274,7 +240,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			listOfPlatforms.get(i).Populate(this.mEngine, mScene,physicsWorld);
 			listOfPlatforms.get(i).getSprite().setVisible(false);
 		}
-		//plat.Populate(this.mEngine, mScene);
 	}
 	public void populateProximityTraps()
 	{
@@ -282,7 +247,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		for(int i=0;i<size;i++)
 		{
 			listOfProximityTraps.get(i).Populate(this.mEngine, mScene);
-			//listOfProximityTraps.get(i).getSprite().setVisible(false);
 		}
 	}
 	@Override
@@ -314,11 +278,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			            	break;}
 			           case MotionEvent.ACTION_UP:{
 			        	   gameState = MENU;
-			        	   //move this stuff to menu button for playing the game
-			       			//for(int i=0;i<listOfPlatforms.size();i++)
-			       			//{
-			       			//	listOfPlatforms.get(i).getSprite().setVisible(true);
-			       			//}
 			       			tapToPlaySprite.setVisible(false);
 			       			splashSprite.setVisible(false);
 			                break;}
@@ -337,97 +296,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		mScene.attachChild(backgroundSprite);
 		mScene.sortChildren();
 		
-		//Menu Stuff
-		playButtonSprite = new Sprite(CAMERA_WIDTH/2.5f,CAMERA_HEIGHT/4,playButtonTextureRegion,this.mEngine.getVertexBufferObjectManager()){
-			@Override
-			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
-					final float pTouchAreaLocalX, final float pTouchAreaLocalY)
-			{
-				int myEventAction = pSceneTouchEvent.getAction();
-
-		        switch (myEventAction) 
-		        {
-		          case MotionEvent.ACTION_DOWN:{
-		        	   break;}
-		          case MotionEvent.ACTION_MOVE: {
-		            	break;}
-		           case MotionEvent.ACTION_UP:{
-		        	   gameState = GAME;
-		        	   //move this stuff to menu button for playing the game
-					   int size = listOfPlatforms.size();
-		       			for(int i=0;i<size;i++)
-		       			{
-		       				listOfPlatforms.get(i).getSprite().setVisible(true);
-		       			}
-		       			playButtonSprite.setVisible(false);
-		       			optionsButtonSprite.setVisible(false);
-		       			quitButtonSprite.setVisible(false);
-		       			//playButtonSprite.setX(-1000);
-		       			//optionsButtonSprite.setX(-1000);
-		       			//quitButtonSprite.setX(-1000);
-		       			//tapToPlaySprite.setVisible(false);
-		       			//splashSprite.setVisible(false);
-		                break;}
-		        }
-				return true;
-			}
-		};
-		playButtonSprite.setZIndex(8);
-		mScene.attachChild(playButtonSprite);
-		playButtonSprite.setVisible(false);
-		this.mScene.registerTouchArea(playButtonSprite);
-		
-		optionsButtonSprite = new Sprite(CAMERA_WIDTH/2.5f,CAMERA_HEIGHT/2,optionsButtonTextureRegion,this.mEngine.getVertexBufferObjectManager())
-		{
-			@Override
-			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
-					final float pTouchAreaLocalX, final float pTouchAreaLocalY)
-			{
-				int myEventAction = pSceneTouchEvent.getAction();
-
-		        switch (myEventAction) 
-		        {
-		          case MotionEvent.ACTION_DOWN:{
-		        	   break;}
-		          case MotionEvent.ACTION_MOVE: {
-		            	break;}
-		           case MotionEvent.ACTION_UP:{
-		                break;}
-		        }
-				return true;
-			}
-		};
-		optionsButtonSprite.setZIndex(8);
-		mScene.attachChild(optionsButtonSprite);
-		optionsButtonSprite.setVisible(false);
-		this.mScene.registerTouchArea(optionsButtonSprite);
-		
-		quitButtonSprite = new Sprite(CAMERA_WIDTH/2.5f,CAMERA_HEIGHT-120,quitButtonTextureRegion,this.mEngine.getVertexBufferObjectManager())
-		{
-			@Override
-			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
-					final float pTouchAreaLocalX, final float pTouchAreaLocalY)
-			{
-				int myEventAction = pSceneTouchEvent.getAction();
-
-		        switch (myEventAction) 
-		        {
-		          case MotionEvent.ACTION_DOWN:{
-		        	   break;}
-		          case MotionEvent.ACTION_MOVE: {
-		            	break;}
-		           case MotionEvent.ACTION_UP:{
-		        	   //System.exit(0);
-		                break;}
-		        }
-				return true;
-			}
-		};
-		quitButtonSprite.setZIndex(8);
-		mScene.attachChild(quitButtonSprite);
-		quitButtonSprite.setVisible(false);
-		this.mScene.registerTouchArea(quitButtonSprite);
-		//end Menu Stuff
 		
 		rightArrowSprite = new Sprite(530, 390, ArrowTextureRegion,
 				this.mEngine.getVertexBufferObjectManager())
@@ -444,8 +312,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		        	  prevX = p.getPlayerX();
 		        	  p.setMoveRight(true);
 		        	  mSmoothCamera.setChaseEntity(p.getCurrentSprite());
-		        	  
-		        	   //mScene.setBackground(new Background(0, 255, 0));
 		        	   break;}
 		          case MotionEvent.ACTION_MOVE: {
 
@@ -455,7 +321,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			        	  p.setFaceRight(true);
 			        	  p.setFaceLeft(false);
 			        	  mSmoothCamera.setChaseEntity(p.getCurrentSprite());
-		        	   //mScene.setBackground(new Background(255, 0, 0));
 		                break;}
 		        }
 				return true;
@@ -480,7 +345,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		        	  prevX = p.getPlayerX();
 		        	  p.setMoveLeft(true);
 		        	  mSmoothCamera.setChaseEntity(p.getCurrentSprite());
-		        	   //mScene.setBackground(new Background(0, 0, 255));
 		        	   break;}
 		          case MotionEvent.ACTION_MOVE: {
 
@@ -490,7 +354,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			        	  p.setFaceRight(false);
 			        	  p.setFaceLeft(true);
 			        	  mSmoothCamera.setChaseEntity(p.getCurrentSprite());
-		        	   //mScene.setBackground(new Background(255, 0, 0));
 		                break;}
 		        }
 				return true;
@@ -508,12 +371,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 
 		//t.Populate(this.mEngine, mScene);
 		p.Populate(this.mEngine, mScene,physicsWorld);
-		
-		//Toast.makeText(Main.this, "game state = " + gameState, Toast.LENGTH_LONG).show();
-		//}
-		
-		//plat.Populate(this.mEngine, mScene);
-		//camera.setCenter(p.getPlayerX(), p.getPlayerY());
+		menu.Populate(this.mEngine, mScene);
+
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
 
 	}
@@ -522,8 +381,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	public void onUpdate(float pSecondsElapsed)
 	{
 		// TODO Auto-generated method stub
-		//camera.setChaseEntity(p.getSprite());
-		//camera.setCenter(camera.getCenterX()+1, camera.getCenterY());
+
 		setSpritesForGameState();
 		if(gameState == GAME)
 		{
@@ -561,10 +419,21 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		}
 		else if (gameState == MENU)
 		{
-			playButtonSprite.setVisible(true);
-			optionsButtonSprite.setVisible(true);
-			quitButtonSprite.setVisible(true);
+			//playButtonSprite.setVisible(true);
+			//optionsButtonSprite.setVisible(true);
+			//quitButtonSprite.setVisible(true);
+			menu.update();
+			
 			backgroundSprite.setVisible(true);
+			if(menu.getStartGame() == true)
+			{
+				gameState = GAME;
+				int size = listOfPlatforms.size();
+       			for(int i=0;i<size;i++)
+       			{
+       				listOfPlatforms.get(i).getSprite().setVisible(true);
+       			}
+			}
 		}
 		else if (gameState == GAME)
 		{
