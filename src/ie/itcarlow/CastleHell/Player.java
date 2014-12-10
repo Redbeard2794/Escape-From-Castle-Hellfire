@@ -27,6 +27,7 @@ public class Player
 	private boolean moveLeft;
 	private boolean faceRight;
 	private boolean faceLeft;
+	private boolean isJumping;
 	private float playerX, playerY;
 	private float centreX, centreY;
 
@@ -53,6 +54,7 @@ public class Player
 		moveLeft = false;
 		faceRight = true;
 		faceLeft = false;
+		isJumping = false;
 		// super(pX,pY,pTiledTextureRegion,pVertextBufferObjectManager);
 		// centreX = this.getX() + this.getWidth()/2;
 		// centreY = this.getY() +this.getHeight()/2;
@@ -75,6 +77,16 @@ public class Player
 	public boolean getFaceLeft(){return faceLeft;}
 	public void setFaceLeft(boolean b){faceLeft = b;}
 	public AnimatedSprite getCurrentSprite(){return currentSprite;}
+
+	public boolean getIsJumping()
+	{
+		return isJumping;
+	}
+
+	public void setIsJumping(boolean jump)
+	{
+		this.isJumping = jump;
+	}
 
 	private Body body;
 
@@ -176,13 +188,17 @@ public class Player
 			}
 		});
 	}
-	
+	public void Jump()
+	{
+		Vector2 curSpeed = body.getLinearVelocity();
+		body.setLinearVelocity(curSpeed.x, curSpeed.y + 100);
+	}
 
 	public void Move()
 	{
 		if(moveRight)
 		{
-			body.setLinearVelocity(1, body.getLinearVelocity().y);
+			body.setLinearVelocity(2, body.getLinearVelocity().y);
 			
 			playerSprite.setVisible(true);
 			playerLeftSprite.setVisible(false);
@@ -196,7 +212,7 @@ public class Player
 		}
 		if(moveLeft)
 		{
-			body.setLinearVelocity(-1, body.getLinearVelocity().y);
+			body.setLinearVelocity(-2, body.getLinearVelocity().y);
 			
 			playerSprite.setVisible(false);
 			playerLeftSprite.setVisible(true);

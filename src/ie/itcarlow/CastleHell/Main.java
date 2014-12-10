@@ -1,9 +1,6 @@
 package ie.itcarlow.CastleHell;
 
-import android.content.Context;
-import android.view.MotionEvent;
-import android.widget.Toast;
-import com.badlogic.gdx.math.Vector2;
+import java.util.Vector;
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.handler.IUpdateHandler;
@@ -26,7 +23,15 @@ import org.andengine.util.level.IEntityLoader;
 import org.andengine.util.level.LevelLoader;
 import org.andengine.util.level.constants.LevelConstants;
 import org.xml.sax.Attributes;
-import java.util.Vector;
+import android.content.Context;
+import android.view.MotionEvent;
+import android.widget.Toast;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Manifold;
 
 public class Main extends BaseGameActivity implements IUpdateHandler
 {
@@ -285,7 +290,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		int size = listOfProximityTraps.size();
 		for (int i = 0; i < size; i++)
 		{
-			listOfProximityTraps.get(i).Populate(this.mEngine, mScene);
+			listOfProximityTraps.get(i).Populate(this.mEngine, mScene,physicsWorld);
 		}
 	}
 
@@ -406,7 +411,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 					}
 					case MotionEvent.ACTION_MOVE:
 					{
-
 						break;
 					}
 					case MotionEvent.ACTION_UP:
@@ -437,8 +441,11 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 				{
 					case MotionEvent.ACTION_DOWN:
 					{
-						p.Jump();
-						mSmoothCamera.setChaseEntity(p.getCurrentSprite());
+						if(p.getIsJumping() == false)
+						{
+							p.Jump();
+							p.setIsJumping(true);
+						}
 						break;
 					}
 					case MotionEvent.ACTION_MOVE:
@@ -449,9 +456,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 					case MotionEvent.ACTION_UP:
 					{
 						p.setMoveLeft(false);
-						p.setFaceRight(false);
-						p.setFaceLeft(true);
-						mSmoothCamera.setChaseEntity(p.getCurrentSprite());
+						p.setMoveRight(false);
 						break;
 					}
 				}
@@ -459,9 +464,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			}
 		};
 		mScene.attachChild(jumpButtonSprite);
-
+		this.mScene.registerTouchArea(jumpButtonSprite);
 		this.mEngine.registerUpdateHandler(this);
-
+		physicsWorld.setContactListener(contactListener);
 		// t.Populate(this.mEngine, mScene);
 		p.Populate(this.mEngine, mScene, physicsWorld);
 		menu.Populate(this.mEngine, mScene);
@@ -539,6 +544,49 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 
 	}
 
+	
+	ContactListener contactListener = new ContactListener()
+	{
+		@Override
+	    public void beginContact(Contact contact)
+	    {
+			final Fixture x1 = contact.getFixtureA();
+	        final Fixture x2 = contact.getFixtureB(); 
+	        final Object userdata1  = x1.getBody().getUserData();
+	        final Object userdata2 = x2.getBody().getUserData();
+	        
+	        if (userdata1 != null && userdata2 != null)
+	        {                   
+	            if (userdata1.equals("player") && userdata2.equals("platform") ||
+	            		userdata1.equals("platform") && userdata2.equals("player"))
+	            {                                               
+	                p.setIsJumping(false);
+	            }
+	        }
+	    }
+
+		@Override
+		public void endContact(Contact contact)
+		{
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void preSolve(Contact contact, Manifold oldManifold)
+		{
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void postSolve(Contact contact, ContactImpulse impulse)
+		{
+			
+			
+		}
+		
+	};
 	void setSpritesForGameState()
 	{
 
