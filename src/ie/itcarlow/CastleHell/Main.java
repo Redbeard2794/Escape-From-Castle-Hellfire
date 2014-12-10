@@ -1,6 +1,10 @@
 package ie.itcarlow.CastleHell;
 
+
+import java.io.IOException;
 import java.util.Vector;
+import org.andengine.audio.sound.Sound;
+import org.andengine.audio.sound.SoundFactory;
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.handler.IUpdateHandler;
@@ -19,6 +23,7 @@ import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.BaseGameActivity;
 import org.andengine.util.SAXUtils;
+import org.andengine.util.debug.Debug;
 import org.andengine.util.level.IEntityLoader;
 import org.andengine.util.level.LevelLoader;
 import org.andengine.util.level.constants.LevelConstants;
@@ -92,6 +97,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	private final byte GAME = 2;
 	byte END = 3;
 	public int gameState = SPLASH;
+	
+	Sound deathScream;
 
 	@Override
 	public EngineOptions onCreateEngineOptions()
@@ -99,9 +106,16 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		mSmoothCamera = new SmoothCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT,
 				100, 0, 1.0f);
 
-		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_SENSOR,
+		//return new EngineOptions(true, ScreenOrientation.LANDSCAPE_SENSOR,
+		//		new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT),
+		//		mSmoothCamera);
+		
+		EngineOptions engine = new EngineOptions(true, ScreenOrientation.LANDSCAPE_SENSOR,
 				new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT),
 				mSmoothCamera);
+		engine.getAudioOptions().setNeedsSound(true);
+		return engine;
+		
 	}
 
 	@Override
@@ -109,7 +123,18 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			OnCreateResourcesCallback pOnCreateResourcesCallback)
 			throws Exception
 	{
+		
 
+			//deathScream = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "assets/sounds/wilhelmScream.wav");
+		try
+		{
+			deathScream = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "sounds/wilhelmScream.ogg");
+		}
+		catch (IOException e)
+		{
+			Debug.e("Cant find sound file");
+		}
+		//deathScream = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "assets/sounds/wilhelmScream.wav");
 		loadGfx();
 		pOnCreateResourcesCallback.onCreateResourcesFinished();
 
@@ -117,6 +142,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 
 	private void loadGfx()
 	{
+
+		
+		
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 		// Background stuff
 		BitmapTextureAtlas backgroundTexture = new BitmapTextureAtlas(
@@ -446,6 +474,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 							p.Jump();
 							p.setIsJumping(true);
 						}
+						deathScream.play();
 						break;
 					}
 					case MotionEvent.ACTION_MOVE:
