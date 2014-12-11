@@ -3,6 +3,7 @@ package ie.itcarlow.CastleHell;
 
 import java.io.IOException;
 import java.util.Vector;
+
 import org.andengine.audio.sound.Sound;
 import org.andengine.audio.sound.SoundFactory;
 import org.andengine.engine.camera.Camera;
@@ -14,23 +15,31 @@ import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.text.Text;
+import org.andengine.entity.text.TextOptions;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.input.touch.TouchEvent;
+import org.andengine.opengl.font.Font;
+import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.BaseGameActivity;
+import org.andengine.util.HorizontalAlign;
 import org.andengine.util.SAXUtils;
 import org.andengine.util.debug.Debug;
 import org.andengine.util.level.IEntityLoader;
 import org.andengine.util.level.LevelLoader;
 import org.andengine.util.level.constants.LevelConstants;
 import org.xml.sax.Attributes;
+
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.widget.Toast;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -99,7 +108,13 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	public int gameState = SPLASH;
 	
 	Sound deathScream;
-
+	private Font f;
+	private Text t;
+	private String myText = "Time elapsed: ";
+	
+	int time;
+	int textLength = 50; 
+	int realTime = 0;
 	@Override
 	public EngineOptions onCreateEngineOptions()
 	{
@@ -143,7 +158,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	private void loadGfx()
 	{
 
-		
+		f = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, Typeface.create(Typeface.DEFAULT,Typeface.BOLD_ITALIC), 27);
+		f.load();
 		
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 		// Background stuff
@@ -329,7 +345,12 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		// TODO Auto-generated method stub
 		// if(gameState == SPLASH)
 		// {
-
+		t = new Text(20,20,f,myText,textLength,new TextOptions(HorizontalAlign.CENTER),this.getVertexBufferObjectManager());
+		t.setColor(1.0f, 0.0f, 0.0f);
+		t.setText( myText + realTime);
+		
+		t.setZIndex(14);
+		mScene.attachChild(t);
 		splashSprite = new Sprite(CAMERA_WIDTH / 7, CAMERA_HEIGHT / 3,
 				splashTextureRegion,
 				this.mEngine.getVertexBufferObjectManager());
@@ -579,6 +600,14 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 				//deathScream.play();
 				p.setDead(false);
 			}
+			time++;
+			if(time>=60)
+			{
+				realTime++;
+				time = 0;
+			}
+			t.setText( myText + realTime);
+			
 		}
 
 	}
