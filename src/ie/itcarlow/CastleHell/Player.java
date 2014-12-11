@@ -1,10 +1,6 @@
 package ie.itcarlow.CastleHell;
 
-import android.content.Context;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
+import org.andengine.audio.sound.Sound;
 import org.andengine.engine.Engine;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.AnimatedSprite;
@@ -15,6 +11,13 @@ import org.andengine.opengl.texture.TextureManager;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
+
+import android.content.Context;
+
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 public class Player
 {
@@ -44,6 +47,7 @@ public class Player
 	private AnimatedSprite playerLeftIdleSprite;
 	
 	private AnimatedSprite currentSprite;
+	boolean dead;
 
 	public Player(Context c, TextureManager t)
 	{
@@ -55,6 +59,7 @@ public class Player
 		faceRight = true;
 		faceLeft = false;
 		isJumping = false;
+		dead = false;
 		// super(pX,pY,pTiledTextureRegion,pVertextBufferObjectManager);
 		// centreX = this.getX() + this.getWidth()/2;
 		// centreY = this.getY() +this.getHeight()/2;
@@ -77,6 +82,8 @@ public class Player
 	public boolean getFaceLeft(){return faceLeft;}
 	public void setFaceLeft(boolean b){faceLeft = b;}
 	public AnimatedSprite getCurrentSprite(){return currentSprite;}
+	public boolean getDead(){return dead;}
+	public void setDead(boolean b){dead = b;}
 
 	public boolean getIsJumping()
 	{
@@ -238,6 +245,11 @@ public class Player
 		}
 		playerX = currentSprite.getX();
 		playerY = currentSprite.getY();
+		
+		if(currentSprite.getY() > 480)
+		{
+			dead = true;
+		}
 	}
 
 	

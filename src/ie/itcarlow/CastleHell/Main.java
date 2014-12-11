@@ -474,7 +474,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 							p.Jump();
 							p.setIsJumping(true);
 						}
-						deathScream.play();
+						
 						break;
 					}
 					case MotionEvent.ACTION_MOVE:
@@ -558,7 +558,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 					listOfPlatforms.get(i).getSprite().setVisible(true);
 				}
 			}
-		} else if (gameState == GAME)
+		}
+		else if (gameState == GAME)
 		{
 			splashSprite.setVisible(false);
 			tapToPlaySprite.setVisible(false);
@@ -569,6 +570,14 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			jumpButtonSprite.setVisible(true);
 			rightArrowSprite.setZIndex(12);
 			p.getCurrentSprite().setVisible(true);
+			
+			if(p.getDead() == true)
+			{
+				p.getCurrentSprite().setX(250);
+				p.getCurrentSprite().setY(250);
+				//deathScream.play();
+				p.setDead(false);
+			}
 		}
 
 	}
