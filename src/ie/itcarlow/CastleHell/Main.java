@@ -488,6 +488,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 						p.setMoveRight(false);
 						break;
 					}
+				
 				}
 				return true;
 			}
