@@ -100,7 +100,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	Camera camera;
 	SmoothCamera mSmoothCamera;
 	private float prevX = 0;
-
+	private Vector<ProximityTrap> fallingTraps = new Vector<ProximityTrap>();
 	private final byte SPLASH = 0;
 	private final byte MENU = 1;
 	private final byte GAME = 2;
@@ -550,6 +550,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 				rightArrowSprite.setX(p.getPlayerX() + 200);
 				leftArrowSprite.setX(p.getPlayerX() - 330);
 				jumpButtonSprite.setX(p.getPlayerX() - 130);
+				t.setX(p.getPlayerX()-280);
+				deathText.setX(p.getPlayerX()-280);
 				prevX = p.getPlayerX();
 			}
 
@@ -558,40 +560,19 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 				rightArrowSprite.setX(p.getPlayerX() + 200);
 				leftArrowSprite.setX(p.getPlayerX() - 330);
 				jumpButtonSprite.setX(p.getPlayerX() - 130);
+				t.setX(p.getPlayerX()-280);
+				deathText.setX(p.getPlayerX()-280);
 				prevX = p.getPlayerX();
 			}
-		}
-		if (gameState == SPLASH)
-		{
-			splashSprite.setVisible(true);
-			tapToPlaySprite.setVisible(true);
-			// p.getCurrentSprite().setVisible(false);
-			backgroundSprite.setVisible(true);
-			rightArrowSprite.setVisible(false);
-			leftArrowSprite.setVisible(false);
-			jumpButtonSprite.setVisible(false);
-			p.getCurrentSprite().setVisible(false);
-			rightArrowSprite.setZIndex(4);
-		} else if (gameState == MENU)
-		{
-			// playButtonSprite.setVisible(true);
-			// optionsButtonSprite.setVisible(true);
-			// quitButtonSprite.setVisible(true);
-			menu.update();
-
-			backgroundSprite.setVisible(true);
-			if (menu.getStartGame() == true)
+			for(int i=0;i<listOfProximityTraps.size();i++)
 			{
-				gameState = GAME;
-				int size = listOfPlatforms.size();
-				for (int i = 0; i < size; i++)
+				if(p.getCurrentSprite().getX() > listOfProximityTraps.get(i).getSprite().getX() -80 && listOfProximityTraps.get(i).getHasFallen() == false)
 				{
-					listOfPlatforms.get(i).getSprite().setVisible(true);
+					listOfProximityTraps.get(i).Trigger();
+					fallingTraps.add(listOfProximityTraps.get(i));
 				}
 			}
-		}
-		else if (gameState == GAME)
-		{
+			
 			splashSprite.setVisible(false);
 			tapToPlaySprite.setVisible(false);
 			// p.getCurrentSprite().setVisible(true);
@@ -610,6 +591,16 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 				deathScream.play();
 				p.setDead(false);
 				deathCounter++;
+				for(int i=0;i<fallingTraps.size();i++)
+				{
+					if(fallingTraps.get(i).getHasFallen() == true)
+					{
+						fallingTraps.get(i).getBody().setTransform(fallingTraps.get(i).getStartX()/30, fallingTraps.get(i).getStartY()/30, 0);
+						fallingTraps.get(i).setHasFallen(false);
+						fallingTraps.get(i).Reset();
+						fallingTraps.remove(i);
+					}
+				}
 			}
 			time++;
 			if(time>=60)
@@ -619,6 +610,57 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			}
 			t.setText( myText + realTime);
 			deathText.setText(deaths+deathCounter);
+			
+/*			for(int i=0;i<fallingTraps.size();i++)
+			{
+				if(fallingTraps.get(i).getHasFallen() == true)
+				{
+					fallingTraps.get(i).getBody().setTransform(fallingTraps.get(i).getSprite().getX()/30, fallingTraps.get(i).getStartY()/30, 0);
+					fallingTraps.get(i).setHasFallen(false);
+					fallingTraps.get(i).Reset();
+					fallingTraps.remove(i);
+				}
+			}*/
+			
+		}
+		if (gameState == SPLASH)
+		{
+			splashSprite.setVisible(true);
+			tapToPlaySprite.setVisible(true);
+			// p.getCurrentSprite().setVisible(false);
+			backgroundSprite.setVisible(true);
+			rightArrowSprite.setVisible(false);
+			leftArrowSprite.setVisible(false);
+			jumpButtonSprite.setVisible(false);
+			p.getCurrentSprite().setVisible(false);
+			rightArrowSprite.setZIndex(4);
+			t.setVisible(false);
+			deathText.setVisible(false);
+		} 
+		else if (gameState == MENU)
+		{
+			// playButtonSprite.setVisible(true);
+			// optionsButtonSprite.setVisible(true);
+			// quitButtonSprite.setVisible(true);
+			menu.update();
+			t.setVisible(false);
+			deathText.setVisible(false);
+			backgroundSprite.setVisible(true);
+			if (menu.getStartGame() == true)
+			{
+				gameState = GAME;
+				t.setVisible(true);
+				deathText.setVisible(true);
+				int size = listOfPlatforms.size();
+				for (int i = 0; i < size; i++)
+				{
+					listOfPlatforms.get(i).getSprite().setVisible(true);
+				}
+			}
+		}
+		else if (gameState == GAME)
+		{
+
 		}
 
 	}
@@ -641,7 +683,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	            {                                               
 	                p.setIsJumping(false);
 	            }
+
 	        }
+	        
 	    }
 
 		@Override
@@ -662,7 +706,38 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		public void postSolve(Contact contact, ContactImpulse impulse)
 		{
 			
-			
+			final Fixture x1 = contact.getFixtureA();
+	        final Fixture x2 = contact.getFixtureB(); 
+	        final Object userdata1  = x1.getBody().getUserData();
+	        final Object userdata2 = x2.getBody().getUserData();
+	        
+            if (userdata1.equals("player") && userdata2.equals("proximityTrap") ||
+            		userdata1.equals("proximityTrap") && userdata2.equals("player"))
+            {
+            	//p.setDead(true);
+            	for(int i=0;i< fallingTraps.size();i++)
+            	{
+
+            		//fallingTraps.get(i).getBody().setTransform(fallingTraps.get(i).getSprite().getX()/30, fallingTraps.get(i).getStartY()/30, 0);
+            		//fallingTraps.get(i).Reset();
+            		if(fallingTraps.get(i).getHasFallen() == false)
+            		{
+            			p.setDead(true);
+            			fallingTraps.get(i).setHasFallen(true);
+            		}
+            		//fallingTraps.remove(i);
+            		//fallingTraps.remove(fallingTraps.get(i));
+            	}
+            }
+            else if (userdata1.equals("platform") && userdata2.equals("proximityTrap") || 
+            		userdata1.equals("proximityTrap") && userdata2.equals("platform"))
+            {
+            	for(int i=0;i<fallingTraps.size();i++)
+            	{
+            		//fallingTraps.get(i).Reset();
+            		fallingTraps.get(i).setHasFallen(true);
+            	}
+            }
 		}
 		
 	};
