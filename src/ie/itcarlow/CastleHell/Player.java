@@ -252,5 +252,9 @@ public class Player
 		}
 	}
 
+	public Body getBody() {
+		return body;
+	}
+
 	
 }

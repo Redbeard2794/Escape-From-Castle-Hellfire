@@ -111,10 +111,13 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	private Font f;
 	private Text t;
 	private String myText = "Time elapsed: ";
+	private Text deathText;
+	private String deaths = "Deaths: ";
 	
 	int time;
 	int textLength = 50; 
 	int realTime = 0;
+	int deathCounter = 0;
 	@Override
 	public EngineOptions onCreateEngineOptions()
 	{
@@ -351,6 +354,12 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		
 		t.setZIndex(14);
 		mScene.attachChild(t);
+		deathText = new Text(20,80,f,deaths,textLength,new TextOptions(HorizontalAlign.CENTER),this.getVertexBufferObjectManager());
+		deathText.setColor(1.0f, 0.0f, 0.0f);
+		deathText.setText( myText + realTime);
+		
+		deathText.setZIndex(14);
+		mScene.attachChild(deathText);
 		splashSprite = new Sprite(CAMERA_WIDTH / 7, CAMERA_HEIGHT / 3,
 				splashTextureRegion,
 				this.mEngine.getVertexBufferObjectManager());
@@ -595,10 +604,12 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			
 			if(p.getDead() == true)
 			{
-				p.getCurrentSprite().setX(250);
-				p.getCurrentSprite().setY(250);
-				//deathScream.play();
+				//p.getCurrentSprite().setX(250);
+				//p.getCurrentSprite().setY(250);
+				p.getBody().setTransform(250 / 30, 250 /30,0);
+				deathScream.play();
 				p.setDead(false);
+				deathCounter++;
 			}
 			time++;
 			if(time>=60)
@@ -607,7 +618,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 				time = 0;
 			}
 			t.setText( myText + realTime);
-			
+			deathText.setText(deaths+deathCounter);
 		}
 
 	}
