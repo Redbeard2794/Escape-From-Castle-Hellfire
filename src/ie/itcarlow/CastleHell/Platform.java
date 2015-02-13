@@ -25,6 +25,14 @@ public class Platform {
 
 	private Body body;
 
+	public Body getBody() {
+		return body;
+	}
+
+	public void setBody(Body body) {
+		this.body = body;
+	}
+
 	public Platform(Context c, TextureManager t, int x, int y, int width, int height)
 	{
 		loadGFX(c, t);

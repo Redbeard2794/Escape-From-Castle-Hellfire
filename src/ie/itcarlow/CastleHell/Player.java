@@ -48,6 +48,17 @@ public class Player
 	
 	private AnimatedSprite currentSprite;
 	boolean dead;
+	
+	private ITiledTextureRegion playerOnHorseTextureRegion;
+	private AnimatedSprite playerHorseSprite;
+
+	public AnimatedSprite getPlayerHorseSprite() {
+		return playerHorseSprite;
+	}
+
+	public void setPlayerHorseSprite(AnimatedSprite playerHorseSprite) {
+		this.playerHorseSprite = playerHorseSprite;
+	}
 
 	public Player(Context c, TextureManager t)
 	{
@@ -96,6 +107,16 @@ public class Player
 	}
 
 	private Body body;
+	
+	private Body horseBody;
+
+	public Body getHorseBody() {
+		return horseBody;
+	}
+
+	public void setHorseBody(Body horseBody) {
+		this.horseBody = horseBody;
+	}
 
 	private void loadGFX(Context c, TextureManager t)
 	{
@@ -122,6 +143,11 @@ public class Player
 				.createTiledFromAsset(playerLeftIdleTexture, c.getAssets(),
 						"playerIdleLeftSheet.png", 0, 0, 16, 1);
 		playerLeftIdleTexture.load();
+		
+		BitmapTextureAtlas playerOnHorseTexture = new BitmapTextureAtlas(t, 720,97);
+		playerOnHorseTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(playerOnHorseTexture, 
+				c.getAssets(), "playerOnHorse.png", 0, 0,8,1);
+		playerOnHorseTexture.load();
 	}
 
 	public void Populate(Engine c, Scene s,PhysicsWorld p)
@@ -152,6 +178,24 @@ public class Player
 		playerRightIdleSprite.setVisible(false);
 		playerLeftIdleSprite.setVisible(false);
 		
+		playerHorseSprite = new AnimatedSprite(playerX,playerY,playerOnHorseTextureRegion,
+				c.getVertexBufferObjectManager());
+		playerHorseSprite.animate(200);
+		s.attachChild(playerHorseSprite);
+		playerHorseSprite.setZIndex(8);
+		playerHorseSprite.setVisible(false);
+		
+		FixtureDef FIXTURE_DEF2 = PhysicsFactory.createFixtureDef(0,0.1f,0.5f);
+		horseBody = PhysicsFactory.createBoxBody(p,playerHorseSprite,BodyDef.BodyType.DynamicBody,FIXTURE_DEF2);
+		horseBody.setUserData("horse");
+		p.registerPhysicsConnector(new PhysicsConnector(playerHorseSprite,horseBody,true,true){
+			@Override
+		public  void onUpdate(float pSecondsElapsed)
+			{
+				super.onUpdate(pSecondsElapsed);
+				Move();
+			}
+		});
 		currentSprite = playerSprite;
 
 		FixtureDef FIXTURE_DEF = PhysicsFactory.createFixtureDef(0,0.1f,0.5f);
@@ -195,10 +239,19 @@ public class Player
 			}
 		});
 	}
-	public void Jump()
+	public void Jump(int level)
 	{
-		Vector2 curSpeed = body.getLinearVelocity();
-		body.setLinearVelocity(curSpeed.x, curSpeed.y + 100);
+		
+		if(level == 1)
+		{
+			Vector2 curSpeed = body.getLinearVelocity();
+			body.setLinearVelocity(curSpeed.x, curSpeed.y + 100);
+		}
+		else if(level == 2)
+		{
+			Vector2 curSpeed = horseBody.getLinearVelocity();
+			horseBody.setLinearVelocity(curSpeed.x, curSpeed.y + 100);
+		}
 	}
 
 	public void Move()
@@ -251,7 +304,28 @@ public class Player
 			dead = true;
 		}
 	}
-
+	
+	public void moveOnHorse()
+	{
+		playerSprite.setVisible(false);
+		playerLeftSprite.setVisible(false);
+		playerRightIdleSprite.setVisible(false);
+		playerLeftIdleSprite.setVisible(false);
+		playerHorseSprite.setVisible(true);
+		currentSprite = playerHorseSprite;
+		
+		
+		
+		horseBody.setLinearVelocity(2, horseBody.getLinearVelocity().y);
+		playerX = playerHorseSprite.getX();
+		playerY = playerHorseSprite.getY();
+		if(playerHorseSprite.getY() > 480)
+		{
+			dead = true;
+			horseBody.setLinearVelocity(0, horseBody.getLinearVelocity().y);  
+		}
+	}
+	
 	public Body getBody() {
 		return body;
 	}

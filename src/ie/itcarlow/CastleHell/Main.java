@@ -4,6 +4,8 @@ package ie.itcarlow.CastleHell;
 import java.io.IOException;
 import java.util.Vector;
 
+import org.andengine.audio.music.Music;
+import org.andengine.audio.music.MusicFactory;
 import org.andengine.audio.sound.Sound;
 import org.andengine.audio.sound.SoundFactory;
 import org.andengine.engine.camera.Camera;
@@ -124,6 +126,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	int currentLevel = 1;
 	private Vector<Door> listOfDoors = new Vector<Door>();
 	
+	Music backgroundMusic;
+	
 	@Override
 	public EngineOptions onCreateEngineOptions()
 	{
@@ -138,6 +142,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 				new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT),
 				mSmoothCamera);
 		engine.getAudioOptions().setNeedsSound(true);
+		engine.getAudioOptions().setNeedsMusic(true);
 		return engine;
 		
 	}
@@ -153,6 +158,18 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		try
 		{
 			deathScream = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "sounds/wilhelmScream.ogg");
+		}
+		catch (IOException e)
+		{
+			Debug.e("Cant find sound file");
+		}
+		
+		try
+		{
+			backgroundMusic = MusicFactory.createMusicFromAsset(this.mEngine.getMusicManager(), this, "sounds/Drums of the Deep.ogg");
+			this.backgroundMusic.setLooping(true);
+			backgroundMusic.play();
+
 		}
 		catch (IOException e)
 		{
@@ -247,7 +264,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	}
 	
 	
-	public void loadLevel() throws IOException
+	public void loadLevel()
 	{
 		// built in levelloader class
 				final LevelLoader levelLoader = new LevelLoader();
@@ -337,9 +354,24 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 					}
 				});
 				if(currentLevel == 1)
-					levelLoader.loadLevelFromAsset(this.getAssets(), "level1.lvl");
-				else if(currentLevel == 2)
-					levelLoader.loadLevelFromAsset(this.getAssets(), "level2.lvl");
+				{
+					try {
+						levelLoader.loadLevelFromAsset(this.getAssets(), "level1.lvl");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				else if(currentLevel == 2) 
+				{
+					CleanUpLevel();
+					try {
+						levelLoader.loadLevelFromAsset(this.getAssets(), "level2.lvl");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 				populatePlatforms();
 				populateProximityTraps();
 				populateDoors();
@@ -351,7 +383,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		for (int i = 0; i < size; i++)
 		{
 			listOfPlatforms.get(i).Populate(this.mEngine, mScene, physicsWorld);
-			listOfPlatforms.get(i).getSprite().setVisible(false);
+			if(currentLevel !=2)
+				listOfPlatforms.get(i).getSprite().setVisible(false);
 		}
 	}
 
@@ -371,6 +404,40 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		{
 			listOfDoors.get(i).Populate(this.mEngine, mScene);
 		}
+	}
+	
+	//this method will clear the lists of different objects from the level to allow
+	//us to go ahead and load another one
+	public void CleanUpLevel()
+	{
+		//physicsWorld.clearPhysicsConnectors();
+		p.getBody().setTransform(-500, 250 /30,0);
+		physicsWorld.destroyBody(p.getBody());
+		int size = listOfPlatforms.size();
+		for (int i = 0; i < size; i++)
+		{
+			physicsWorld.destroyBody(listOfPlatforms.get(i).getBody());
+			mScene.detachChild(listOfPlatforms.get(i).getSprite());
+
+		}
+		listOfPlatforms.clear();
+		
+		int size1 = listOfProximityTraps.size();
+		for (int i = 0; i < size1; i++)
+		{
+			physicsWorld.destroyBody(listOfProximityTraps.get(i).getBody());
+			mScene.detachChild(listOfProximityTraps.get(i).getSprite());
+		}
+		listOfProximityTraps.clear();
+		
+		int size2 = listOfDoors.size();
+		for (int i = 0; i < size2; i++)
+		{
+			mScene.detachChild(listOfDoors.get(i).getDoorSprite());
+		}
+		listOfDoors.clear();
+		
+		mSmoothCamera.setChaseEntity(p.getPlayerHorseSprite());
 	}
 
 	@Override
@@ -533,7 +600,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 					{
 						if(p.getIsJumping() == false)
 						{
-							p.Jump();
+							p.Jump(currentLevel);
 							p.setIsJumping(true);
 						}
 						
@@ -619,7 +686,10 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			{
 				//p.getCurrentSprite().setX(250);
 				//p.getCurrentSprite().setY(250);
-				p.getBody().setTransform(250 / 30, 250 /30,0);
+				if(currentLevel == 1)
+					p.getBody().setTransform(250 / 30, 250 /30,0);
+				else if(currentLevel == 2)
+					p.getHorseBody().setTransform(250 / 30, 250 /30,0); 
 				deathScream.play();
 				p.setDead(false);
 				deathCounter++;
@@ -645,9 +715,45 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			
 			if(p.getCurrentSprite().collidesWith(listOfDoors.get(0).getDoorSprite()))
 			{
-				currentLevel+=1;
+				if(currentLevel < 2)
+				{
+					currentLevel+=1;
+					p.getBody().setTransform(250 / 30, 250 /30,0);
+					p.getHorseBody().setTransform(250 / 30, 250 /30,0);
+
+						loadLevel();
+					mScene.detachChild(rightArrowSprite);
+					mScene.detachChild(leftArrowSprite);
+					mScene.unregisterTouchArea(leftArrowSprite);
+					mScene.unregisterTouchArea(rightArrowSprite);
+				}
+
 				//p.setPlayerX(250);
 				//p.setPlayerY(250);
+			}
+			
+			if(currentLevel == 2)
+			{
+				p.moveOnHorse();
+				if (p.getPlayerX() > prevX)
+				{
+					rightArrowSprite.setX(p.getPlayerX() + 200);
+					leftArrowSprite.setX(p.getPlayerX() - 330);
+					jumpButtonSprite.setX(p.getPlayerX() - 130);
+					t.setX(p.getPlayerX()-280);
+					deathText.setX(p.getPlayerX()-280);
+					prevX = p.getPlayerX();
+				}
+
+				else if (p.getPlayerX() < prevX)
+				{
+					rightArrowSprite.setX(p.getPlayerX() + 200);
+					leftArrowSprite.setX(p.getPlayerX() - 330);
+					jumpButtonSprite.setX(p.getPlayerX() - 130);
+					t.setX(p.getPlayerX()-280);
+					deathText.setX(p.getPlayerX()-280);
+					prevX = p.getPlayerX();
+				}
 			}
 			
 /*			for(int i=0;i<fallingTraps.size();i++)
@@ -716,12 +822,22 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	        final Object userdata2 = x2.getBody().getUserData();
 	        
 	        if (userdata1 != null && userdata2 != null)
-	        {                   
-	            if (userdata1.equals("player") && userdata2.equals("platform") ||
-	            		userdata1.equals("platform") && userdata2.equals("player"))
-	            {                                               
-	                p.setIsJumping(false);
-	            }
+	        {       
+	        	if(currentLevel == 1){
+	        		if (userdata1.equals("player") && userdata2.equals("platform") ||
+	        				userdata1.equals("platform") && userdata2.equals("player"))
+	        		{                                               
+	        			p.setIsJumping(false);
+	        		}
+	        	}
+	        	else if(currentLevel == 2)
+	        	{
+	        		if (userdata1.equals("horse") && userdata2.equals("platform") ||
+	        				userdata1.equals("platform") && userdata2.equals("horse"))
+	        		{                                               
+	        			p.setIsJumping(false);
+	        		}
+	        	}
 
 	        }
 	        
