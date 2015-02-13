@@ -22,6 +22,9 @@ public class Menu {
 	private ITextureRegion quitButtonTextureRegion;
 	private Sprite quitButtonSprite;
 	
+	private ITextureRegion multiplayerTextureRegion;
+	private Sprite multiplayerSprite;
+	
 	boolean startGame = false;
 	
 	public Menu(Context c, TextureManager t)
@@ -41,10 +44,15 @@ public class Menu {
 		BitmapTextureAtlas quitButtonTexture = new BitmapTextureAtlas(t, 199, 38);
 		quitButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(quitButtonTexture,c.getAssets(),"menuButtons/quitButton.png",0,0);
 		quitButtonTexture.load();
+		
+		BitmapTextureAtlas multiplayerButtonTexture = new BitmapTextureAtlas(t,199,38);
+		multiplayerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(multiplayerButtonTexture,c.getAssets(),
+				"menuButtons/multiplayerButton.png",0,0);
+		multiplayerButtonTexture.load();
 	}
 	public void Populate(Engine c, Scene s)
 	{
-		playButtonSprite = new Sprite(720/2.5f,480/4,playButtonTextureRegion,c.getVertexBufferObjectManager()){
+		playButtonSprite = new Sprite(720/2.5f,480/6,playButtonTextureRegion,c.getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
 					final float pTouchAreaLocalX, final float pTouchAreaLocalY)
@@ -59,21 +67,12 @@ public class Menu {
 		            	break;}
 		           case MotionEvent.ACTION_UP:{
 		        	   startGame = true;
-		        	   //gameState = GAME;
-		        	   //move this stuff to menu button for playing the game
-					   //int size = listOfPlatforms.size();
-		       			//for(int i=0;i<size;i++)
-		       			//{
-		       			//	listOfPlatforms.get(i).getSprite().setVisible(true);
-		       			//}
+
 		       			playButtonSprite.setVisible(false);
 		       			optionsButtonSprite.setVisible(false);
 		       			quitButtonSprite.setVisible(false);
-		       			//playButtonSprite.setX(-1000);
-		       			//optionsButtonSprite.setX(-1000);
-		       			//quitButtonSprite.setX(-1000);
-		       			//tapToPlaySprite.setVisible(false);
-		       			//splashSprite.setVisible(false);
+		       			multiplayerSprite.setVisible(false);
+
 		                break;}
 		        }
 				return true;
@@ -81,10 +80,10 @@ public class Menu {
 		};
 		playButtonSprite.setZIndex(8);
 		s.attachChild(playButtonSprite);
-		//playButtonSprite.setVisible(false);
+
 		s.registerTouchArea(playButtonSprite);
 		
-		optionsButtonSprite = new Sprite(720/2.5f,480/2,optionsButtonTextureRegion,c.getVertexBufferObjectManager())
+		optionsButtonSprite = new Sprite(720/2.5f,480/3,optionsButtonTextureRegion,c.getVertexBufferObjectManager())
 		{
 			@Override
 			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
@@ -109,7 +108,33 @@ public class Menu {
 		//optionsButtonSprite.setVisible(false);
 		s.registerTouchArea(optionsButtonSprite);
 		
-		quitButtonSprite = new Sprite(720/2.5f,480-120,quitButtonTextureRegion,c.getVertexBufferObjectManager())
+		quitButtonSprite = new Sprite(720/2.5f,320,quitButtonTextureRegion,c.getVertexBufferObjectManager())
+		{
+			@Override
+			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
+					final float pTouchAreaLocalX, final float pTouchAreaLocalY)
+			{
+				int myEventAction = pSceneTouchEvent.getAction();
+
+		        switch (myEventAction) 
+		        {
+		          case MotionEvent.ACTION_DOWN:{
+		        	   break;}
+		          case MotionEvent.ACTION_MOVE: {
+		            	break;}
+		           case MotionEvent.ACTION_UP:{
+		        	   System.exit(0);
+		                break;}
+		        }
+				return true;
+			}
+		};
+		quitButtonSprite.setZIndex(8);
+		s.attachChild(quitButtonSprite);
+		//quitButtonSprite.setVisible(false);
+		s.registerTouchArea(quitButtonSprite);
+		
+		multiplayerSprite = new Sprite(720/2.5f,480/2,multiplayerTextureRegion,c.getVertexBufferObjectManager())
 		{
 			@Override
 			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
@@ -130,13 +155,13 @@ public class Menu {
 				return true;
 			}
 		};
-		quitButtonSprite.setZIndex(8);
-		s.attachChild(quitButtonSprite);
-		//quitButtonSprite.setVisible(false);
-		s.registerTouchArea(quitButtonSprite);
+		multiplayerSprite.setZIndex(8);
+		s.attachChild(multiplayerSprite);
+		s.registerTouchArea(multiplayerSprite);
 		
 		playButtonSprite.setVisible(false);
 		optionsButtonSprite.setVisible(false);
+		multiplayerSprite.setVisible(false);
 		quitButtonSprite.setVisible(false);
 	}
 	public void update()
@@ -146,12 +171,14 @@ public class Menu {
 			playButtonSprite.setVisible(false);
 			optionsButtonSprite.setVisible(false);
 			quitButtonSprite.setVisible(false);
+			multiplayerSprite.setVisible(false);
 		}
 		else
 		{
 			playButtonSprite.setVisible(true);
 			optionsButtonSprite.setVisible(true);
 			quitButtonSprite.setVisible(true);
+			multiplayerSprite.setVisible(true);
 		}
 	}
 	public boolean getStartGame(){return startGame;}

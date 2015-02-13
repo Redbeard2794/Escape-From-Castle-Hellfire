@@ -64,6 +64,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PROXIMITYTRAP = "proximityTrap";
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PATTERNTRAP = "patternTrap";
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_INSTAKILLTRAP = "instakillTrap";
+	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_DOOR = "door";
+
 
 	private Scene mScene;
 
@@ -118,11 +120,15 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	int textLength = 50; 
 	int realTime = 0;
 	int deathCounter = 0;
+	
+	int currentLevel = 1;
+	private Vector<Door> listOfDoors = new Vector<Door>();
+	
 	@Override
 	public EngineOptions onCreateEngineOptions()
 	{
 		mSmoothCamera = new SmoothCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT,
-				100, 0, 1.0f);
+				200, 0, 1.0f);
 
 		//return new EngineOptions(true, ScreenOrientation.LANDSCAPE_SENSOR,
 		//		new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT),
@@ -234,92 +240,109 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, 17), false);
 		this.mScene.registerUpdateHandler(physicsWorld);
 
+		
+		loadLevel();
+		
+		pOnCreateSceneCallback.onCreateSceneFinished(this.mScene);
+	}
+	
+	
+	public void loadLevel() throws IOException
+	{
 		// built in levelloader class
-		final LevelLoader levelLoader = new LevelLoader();
-		levelLoader.setAssetBasePath("level/");
+				final LevelLoader levelLoader = new LevelLoader();
+				levelLoader.setAssetBasePath("level/");
 
-		levelLoader.registerEntityLoader(LevelConstants.TAG_LEVEL,
-				new IEntityLoader()
+				levelLoader.registerEntityLoader(LevelConstants.TAG_LEVEL,
+						new IEntityLoader()
+						{
+							@Override
+							public IEntity onLoadEntity(final String pEntityName,
+									final Attributes pAttributes)
+							{
+								final int width = SAXUtils.getIntAttributeOrThrow(
+										pAttributes,
+										LevelConstants.TAG_LEVEL_ATTRIBUTE_WIDTH);
+								final int height = SAXUtils.getIntAttributeOrThrow(
+										pAttributes,
+										LevelConstants.TAG_LEVEL_ATTRIBUTE_HEIGHT);
+								Main.this.runOnUiThread(new Runnable()
+								{
+									@Override
+									public void run()
+									{
+										Toast.makeText(Main.this,
+												"Welcome to Castle Hellfire",
+												Toast.LENGTH_LONG).show();
+										// Toast.makeText(Main.this,
+										// "Loaded level with width=" + width +
+										// " and height=" + height + ".",
+										// Toast.LENGTH_LONG).show();
+									}
+								});
+								return Main.this.mScene;
+							}
+						});
+
+				levelLoader.registerEntityLoader(TAG_ENTITY, new IEntityLoader()
 				{
+
 					@Override
 					public IEntity onLoadEntity(final String pEntityName,
 							final Attributes pAttributes)
 					{
-						final int width = SAXUtils.getIntAttributeOrThrow(
-								pAttributes,
-								LevelConstants.TAG_LEVEL_ATTRIBUTE_WIDTH);
-						final int height = SAXUtils.getIntAttributeOrThrow(
-								pAttributes,
-								LevelConstants.TAG_LEVEL_ATTRIBUTE_HEIGHT);
-						Main.this.runOnUiThread(new Runnable()
+						final int x = SAXUtils.getIntAttributeOrThrow(pAttributes,
+								TAG_ENTITY_ATTRIBUTE_X);
+						final int y = SAXUtils.getIntAttributeOrThrow(pAttributes,
+								TAG_ENTITY_ATTRIBUTE_Y);
+						final int width = SAXUtils.getIntAttributeOrThrow(pAttributes,
+								TAG_ENTITY_ATTRIBUTE_WIDTH);
+						final int height = SAXUtils.getIntAttributeOrThrow(pAttributes,
+								TAG_ENTITY_ATTRIBUTE_HEIGHT);
+						final String type = SAXUtils.getAttributeOrThrow(pAttributes,
+								TAG_ENTITY_ATTRIBUTE_TYPE);
+
+						final VertexBufferObjectManager vertexBufferObjectManager = Main.this
+								.getVertexBufferObjectManager();
+
+						final Platform spr;
+						final Sprite pla;
+						final ProximityTrap trap;
+						final Door door;
+
+						if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM))
 						{
-							@Override
-							public void run()
-							{
-								Toast.makeText(Main.this,
-										"Welcome to Castle Hellfire",
-										Toast.LENGTH_LONG).show();
-								// Toast.makeText(Main.this,
-								// "Loaded level with width=" + width +
-								// " and height=" + height + ".",
-								// Toast.LENGTH_LONG).show();
-							}
-						});
-						return Main.this.mScene;
+							spr = new Platform(c, getTextureManager(), x, y, width,
+									height);
+							listOfPlatforms.add(spr);
+							return spr.getSprite();
+						} else if (type
+								.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PROXIMITYTRAP))
+						{
+							trap = new ProximityTrap(x, y, c, getTextureManager());
+							listOfProximityTraps.add(trap);
+							return trap.getSprite();
+						}
+						else if(type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_DOOR))
+						{
+							door = new Door(x,y,c,getTextureManager());
+							listOfDoors.add(door);
+							return door.getDoorSprite();
+						}
+						else
+						{
+							return null;// move this into the if where we create the
+										// platform.
+						}
 					}
 				});
-
-		levelLoader.registerEntityLoader(TAG_ENTITY, new IEntityLoader()
-		{
-
-			@Override
-			public IEntity onLoadEntity(final String pEntityName,
-					final Attributes pAttributes)
-			{
-				final int x = SAXUtils.getIntAttributeOrThrow(pAttributes,
-						TAG_ENTITY_ATTRIBUTE_X);
-				final int y = SAXUtils.getIntAttributeOrThrow(pAttributes,
-						TAG_ENTITY_ATTRIBUTE_Y);
-				final int width = SAXUtils.getIntAttributeOrThrow(pAttributes,
-						TAG_ENTITY_ATTRIBUTE_WIDTH);
-				final int height = SAXUtils.getIntAttributeOrThrow(pAttributes,
-						TAG_ENTITY_ATTRIBUTE_HEIGHT);
-				final String type = SAXUtils.getAttributeOrThrow(pAttributes,
-						TAG_ENTITY_ATTRIBUTE_TYPE);
-
-				final VertexBufferObjectManager vertexBufferObjectManager = Main.this
-						.getVertexBufferObjectManager();
-
-				final Platform spr;
-				final Sprite pla;
-				final ProximityTrap trap;
-
-				if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM))
-				{
-					spr = new Platform(c, getTextureManager(), x, y, width,
-							height);
-					listOfPlatforms.add(spr);
-					return spr.getSprite();
-				} else if (type
-						.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PROXIMITYTRAP))
-				{
-					trap = new ProximityTrap(x, y, c, getTextureManager());
-					listOfProximityTraps.add(trap);
-					return trap.getSprite();
-				}
-
-				else
-				{
-					return null;// move this into the if where we create the
-								// platform.
-				}
-			}
-		});
-
-		levelLoader.loadLevelFromAsset(this.getAssets(), "level1.lvl");
-		populatePlatforms();
-		populateProximityTraps();
-		pOnCreateSceneCallback.onCreateSceneFinished(this.mScene);
+				if(currentLevel == 1)
+					levelLoader.loadLevelFromAsset(this.getAssets(), "level1.lvl");
+				else if(currentLevel == 2)
+					levelLoader.loadLevelFromAsset(this.getAssets(), "level2.lvl");
+				populatePlatforms();
+				populateProximityTraps();
+				populateDoors();
 	}
 
 	public void populatePlatforms()
@@ -338,6 +361,15 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		for (int i = 0; i < size; i++)
 		{
 			listOfProximityTraps.get(i).Populate(this.mEngine, mScene,physicsWorld);
+		}
+	}
+	
+	public void populateDoors()
+	{
+		int size = listOfDoors.size();
+		for(int i= 0;i<size;i++)
+		{
+			listOfDoors.get(i).Populate(this.mEngine, mScene);
 		}
 	}
 
@@ -610,6 +642,13 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 			}
 			t.setText( myText + realTime);
 			deathText.setText(deaths+deathCounter);
+			
+			if(p.getCurrentSprite().collidesWith(listOfDoors.get(0).getDoorSprite()))
+			{
+				currentLevel+=1;
+				//p.setPlayerX(250);
+				//p.setPlayerY(250);
+			}
 			
 /*			for(int i=0;i<fallingTraps.size();i++)
 			{
