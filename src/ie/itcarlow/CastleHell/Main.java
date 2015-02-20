@@ -1,6 +1,8 @@
 package ie.itcarlow.CastleHell;
 
 
+import ie.itcarlow.CastleHell.WebSocket;
+
 import java.io.IOException;
 import java.util.Vector;
 
@@ -36,10 +38,13 @@ import org.andengine.util.debug.Debug;
 import org.andengine.util.level.IEntityLoader;
 import org.andengine.util.level.LevelLoader;
 import org.andengine.util.level.constants.LevelConstants;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xml.sax.Attributes;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
@@ -50,7 +55,7 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
-public class Main extends BaseGameActivity implements IUpdateHandler
+public class Main extends BaseGameActivity implements IUpdateHandler, MessageHandler
 {
 	private static final int CAMERA_WIDTH = 720;
 	private static final int CAMERA_HEIGHT = 480;
@@ -109,6 +114,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	private final byte SPLASH = 0;
 	private final byte MENU = 1;
 	private final byte GAME = 2;
+	private final byte MULTIPLAYER = 4;
 	byte END = 3;
 	public int gameState = SPLASH;
 	
@@ -128,6 +134,10 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	private Vector<Door> listOfDoors = new Vector<Door>();
 	
 	Music backgroundMusic;
+	
+	private WebSocket mWebSocketClient;
+	
+	private final String TAG = "WebSocketActivity"; 
 	
 	@Override
 	public EngineOptions onCreateEngineOptions()
@@ -178,6 +188,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		}
 		//deathScream = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "assets/sounds/wilhelmScream.wav");
 		loadGfx();
+		
+		 mWebSocketClient = new WebSocket(this);	
+		
 		pOnCreateResourcesCallback.onCreateResourcesFinished();
 
 	}
@@ -814,7 +827,20 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 					listOfPlatforms.get(i).getSprite().setVisible(true);
 				}
 			}
+			
+			else if(menu.isMultiplayer() == true)
+			{
+				gameState = MULTIPLAYER;
+				mWebSocketClient.sendMessage();
+			}
+			
 		}
+		
+		else if(gameState == MULTIPLAYER)
+		{
+			
+		}
+		
 		else if (gameState == GAME)
 		{
 
@@ -919,5 +945,44 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	{
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void handleMessage(String message) {
+		try {
+			JSONObject json = new JSONObject(message);
+    		String type = json.getString("type");
+    		String data = json.getString("data");
+
+ 		   	
+ 		   	//issue is here. this never happens
+ 		   	if ( type.equalsIgnoreCase("updateState"))  
+ 		   	{
+ 		   		//hPos = data;
+ 		   		updateState(true);
+ 		   	}  
+
+
+
+		} catch (JSONException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void updateState(boolean remoteMessage)
+	{
+		if(remoteMessage == true)
+		{
+			Log.d(TAG,"true");
+			//Log.d(TAG, hPos);
+			//Log.d(TAG, "Y: "+tY); 
+			//waiting.setText(hPos); 
+			//print the info on the screen
+		}
+		else if(remoteMessage == false){
+			//mWebSocketClient.sendMessage(tX, tY); 
+		}
 	}
 }

@@ -26,6 +26,7 @@ public class Menu {
 	private Sprite multiplayerSprite;
 	
 	boolean startGame = false;
+	boolean multiplayer = false;
 	
 	public Menu(Context c, TextureManager t)
 	{
@@ -149,7 +150,7 @@ public class Menu {
 		          case MotionEvent.ACTION_MOVE: {
 		            	break;}
 		           case MotionEvent.ACTION_UP:{
-		        	   //System.exit(0);
+		        	   multiplayer = true;
 		                break;}
 		        }
 				return true;
@@ -164,6 +165,7 @@ public class Menu {
 		multiplayerSprite.setVisible(false);
 		quitButtonSprite.setVisible(false);
 	}
+
 	public void update()
 	{
 		if (startGame == true)
@@ -182,4 +184,10 @@ public class Menu {
 		}
 	}
 	public boolean getStartGame(){return startGame;}
+	public boolean isMultiplayer() {
+		return multiplayer;
+	}
+	public void setMultiplayer(boolean multiplayer) {
+		this.multiplayer = multiplayer;
+	}
 }
