@@ -838,6 +838,121 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 		
 		else if(gameState == MULTIPLAYER)
 		{
+			// p.Move();
+			// mSmoothCamera.setCenter(p.getPlayerX(), p.getPlayerY());
+			if (p.getPlayerX() > prevX)
+			{
+				rightArrowSprite.setX(p.getPlayerX() + 200);
+				leftArrowSprite.setX(p.getPlayerX() - 330);
+				jumpButtonSprite.setX(p.getPlayerX() - 130);
+				t.setX(p.getPlayerX()-280);
+				deathText.setX(p.getPlayerX()-280);
+				prevX = p.getPlayerX();
+			}
+
+			else if (p.getPlayerX() < prevX)
+			{
+				rightArrowSprite.setX(p.getPlayerX() + 200);
+				leftArrowSprite.setX(p.getPlayerX() - 330);
+				jumpButtonSprite.setX(p.getPlayerX() - 130);
+				t.setX(p.getPlayerX()-280);
+				deathText.setX(p.getPlayerX()-280);
+				prevX = p.getPlayerX();
+			}
+			for(int i=0;i<listOfProximityTraps.size();i++)
+			{
+				if(p.getCurrentSprite().getX() > listOfProximityTraps.get(i).getSprite().getX() -80 && listOfProximityTraps.get(i).getHasFallen() == false)
+				{
+					listOfProximityTraps.get(i).Trigger();
+					fallingTraps.add(listOfProximityTraps.get(i));
+				}
+			}
+			
+			splashSprite.setVisible(false);
+			tapToPlaySprite.setVisible(false);
+			// p.getCurrentSprite().setVisible(true);
+			backgroundSprite.setVisible(true);
+			rightArrowSprite.setVisible(true);
+			leftArrowSprite.setVisible(true);
+			jumpButtonSprite.setVisible(true);
+			rightArrowSprite.setZIndex(12);
+			p.getCurrentSprite().setVisible(true);
+			
+			if(p.getDead() == true)
+			{
+				//p.getCurrentSprite().setX(250);
+				//p.getCurrentSprite().setY(250);
+				if(currentLevel == 1)
+					p.getBody().setTransform(250 / 30, 250 /30,0);
+				else if(currentLevel == 2)
+					p.getHorseBody().setTransform(250 / 30, 250 /30,0); 
+				deathScream.play();
+				p.setDead(false);
+				deathCounter++;
+				for(int i=0;i<fallingTraps.size();i++)
+				{
+					if(fallingTraps.get(i).getHasFallen() == true)
+					{
+						fallingTraps.get(i).getBody().setTransform(fallingTraps.get(i).getStartX()/30, fallingTraps.get(i).getStartY()/30, 0);
+						fallingTraps.get(i).setHasFallen(false);
+						fallingTraps.get(i).Reset();
+						fallingTraps.remove(i);
+					}
+				}  
+			}
+			time++;
+			if(time>=60)
+			{
+				realTime++;
+				time = 0;
+			}
+			t.setText( myText + realTime);
+			deathText.setText(deaths+deathCounter);
+			
+			if(p.getCurrentSprite().collidesWith(listOfDoors.get(0).getDoorSprite()))
+			{
+				if(currentLevel < 2)
+				{
+					currentLevel+=1;
+					//p.getBody().setTransform(250 / 30, 250 /30,0);
+					//p.getHorseBody().setTransform(250 / 30, 250 /30,0);
+
+						loadLevel();
+					mScene.detachChild(rightArrowSprite);
+					mScene.detachChild(leftArrowSprite);
+					mScene.unregisterTouchArea(leftArrowSprite);
+					mScene.unregisterTouchArea(rightArrowSprite);
+				}
+
+				//p.setPlayerX(250);
+				//p.setPlayerY(250);
+			}
+			
+			if(currentLevel == 2)
+			{
+				p.moveOnHorse();
+				if (p.getPlayerX() > prevX)
+				{
+					rightArrowSprite.setX(p.getPlayerX() + 200);
+					leftArrowSprite.setX(p.getPlayerX() - 330);
+					jumpButtonSprite.setX(p.getPlayerX() - 130);
+					t.setX(p.getPlayerX()-280);
+					deathText.setX(p.getPlayerX()-280);
+					prevX = p.getPlayerX();
+				}
+
+				else if (p.getPlayerX() < prevX)
+				{
+					rightArrowSprite.setX(p.getPlayerX() + 200);
+					leftArrowSprite.setX(p.getPlayerX() - 330);
+					jumpButtonSprite.setX(p.getPlayerX() - 130);
+					t.setX(p.getPlayerX()-280);
+					deathText.setX(p.getPlayerX()-280);
+					prevX = p.getPlayerX();
+				}
+			}
+			
+			updateState(false);
 			
 		}
 		
@@ -962,7 +1077,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
  		   		updateState(true);
  		   	}  
 
-
+ 
 
 		} catch (JSONException e) { 
 			// TODO Auto-generated catch block
@@ -982,7 +1097,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 			//print the info on the screen
 		}
 		else if(remoteMessage == false){
-			//mWebSocketClient.sendMessage(tX, tY); 
+			mWebSocketClient.sendMessage((int)p.getPlayerX(), (int)p.getPlayerY()); 
 		}
 	}
 }
