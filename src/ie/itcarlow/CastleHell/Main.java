@@ -19,6 +19,7 @@ import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
+import org.andengine.extension.debugdraw.DebugRenderer;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.input.touch.TouchEvent;
@@ -355,20 +356,26 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 				});
 				if(currentLevel == 1)
 				{
-					try {
+					try { 
 						levelLoader.loadLevelFromAsset(this.getAssets(), "level1.lvl");
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
 				else if(currentLevel == 2) 
 				{
+					//p.getBody().setTransform(250 / 30, 250 /30,0);
+					//p.getBody().setTransform(-500, 250 /30,0);
 					CleanUpLevel();
+					
+					p.Populate(this.mEngine, mScene, physicsWorld, currentLevel);
+					p.getHorseBody().setTransform(250 / 30, 250 /30,0); 
+					mSmoothCamera.setChaseEntity(p.getPlayerHorseSprite());
+					mSmoothCamera.setMaxVelocityX(1200);
+					//p.getHorseBody().setTransform(30 / 30, 30 /30,0); 
 					try {
 						levelLoader.loadLevelFromAsset(this.getAssets(), "level2.lvl");
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -411,7 +418,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	public void CleanUpLevel()
 	{
 		//physicsWorld.clearPhysicsConnectors();
-		p.getBody().setTransform(-500, 250 /30,0);
+		//p.getBody().setTransform(-500, 250 /30,0);
+		//p.getHorseBody().setTransform(250/30, 250 /30,0); 
 		physicsWorld.destroyBody(p.getBody());
 		int size = listOfPlatforms.size();
 		for (int i = 0; i < size; i++)
@@ -437,7 +445,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		}
 		listOfDoors.clear();
 		
-		mSmoothCamera.setChaseEntity(p.getPlayerHorseSprite());
+		//mSmoothCamera.setChaseEntity(p.getPlayerHorseSprite());
 	}
 
 	@Override
@@ -627,8 +635,12 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 		this.mEngine.registerUpdateHandler(this);
 		physicsWorld.setContactListener(contactListener);
 		// t.Populate(this.mEngine, mScene);
-		p.Populate(this.mEngine, mScene, physicsWorld);
+		p.Populate(this.mEngine, mScene, physicsWorld, currentLevel);
 		menu.Populate(this.mEngine, mScene);
+		
+        DebugRenderer debug = new DebugRenderer(physicsWorld, getVertexBufferObjectManager());
+        pScene.attachChild(debug);
+
 
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
 
@@ -718,8 +730,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 				if(currentLevel < 2)
 				{
 					currentLevel+=1;
-					p.getBody().setTransform(250 / 30, 250 /30,0);
-					p.getHorseBody().setTransform(250 / 30, 250 /30,0);
+					//p.getBody().setTransform(250 / 30, 250 /30,0);
+					//p.getHorseBody().setTransform(250 / 30, 250 /30,0);
 
 						loadLevel();
 					mScene.detachChild(rightArrowSprite);
@@ -820,6 +832,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler
 	        final Fixture x2 = contact.getFixtureB(); 
 	        final Object userdata1  = x1.getBody().getUserData();
 	        final Object userdata2 = x2.getBody().getUserData();
+	        
 	        
 	        if (userdata1 != null && userdata2 != null)
 	        {       

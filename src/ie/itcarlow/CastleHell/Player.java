@@ -63,7 +63,7 @@ public class Player
 	public Player(Context c, TextureManager t)
 	{
 		loadGFX(c, t);
-		playerX = 250;
+		playerX = 350;
 		playerY = 250;
 		moveRight = false;
 		moveLeft = false;
@@ -150,94 +150,103 @@ public class Player
 		playerOnHorseTexture.load();
 	}
 
-	public void Populate(Engine c, Scene s,PhysicsWorld p)
+	public void Populate(Engine c, Scene s,PhysicsWorld p, int currLevel)
 	{
-		playerSprite = new AnimatedSprite(playerX, playerY, playerTiledTextureRegion,
-				c.getVertexBufferObjectManager());
-		playerSprite.animate(250);
-		s.attachChild(playerSprite);
-		
-		playerLeftSprite = new AnimatedSprite(playerX,playerY,playerLeftTiledTextureRegion,
-				c.getVertexBufferObjectManager());
-		playerLeftSprite.animate(250);
-		s.attachChild(playerLeftSprite);
-		
-		playerSprite.setVisible(true);
-		playerLeftSprite.setVisible(false);
-		
-		playerRightIdleSprite = new AnimatedSprite(playerX, playerY, playerRightIdleTiledTextureRegion,
-				c.getVertexBufferObjectManager());
-		playerRightIdleSprite.animate(200);
-		s.attachChild(playerRightIdleSprite);
-		
-		playerLeftIdleSprite = new AnimatedSprite(playerX, playerY, playerLeftIdleTiledTextureRegion,
-				c.getVertexBufferObjectManager());
-		playerLeftIdleSprite.animate(200);
-		s.attachChild(playerLeftIdleSprite);
-		
-		playerRightIdleSprite.setVisible(false);
-		playerLeftIdleSprite.setVisible(false);
-		
-		playerHorseSprite = new AnimatedSprite(playerX,playerY,playerOnHorseTextureRegion,
-				c.getVertexBufferObjectManager());
-		playerHorseSprite.animate(200);
-		s.attachChild(playerHorseSprite);
-		playerHorseSprite.setZIndex(8);
-		playerHorseSprite.setVisible(false);
-		
-		FixtureDef FIXTURE_DEF2 = PhysicsFactory.createFixtureDef(0,0.1f,0.5f);
-		horseBody = PhysicsFactory.createBoxBody(p,playerHorseSprite,BodyDef.BodyType.DynamicBody,FIXTURE_DEF2);
-		horseBody.setUserData("horse");
-		p.registerPhysicsConnector(new PhysicsConnector(playerHorseSprite,horseBody,true,true){
-			@Override
-		public  void onUpdate(float pSecondsElapsed)
-			{
-				super.onUpdate(pSecondsElapsed);
-				Move();
-			}
-		});
-		currentSprite = playerSprite;
-
-		FixtureDef FIXTURE_DEF = PhysicsFactory.createFixtureDef(0,0.1f,0.5f);
-		body = PhysicsFactory.createBoxBody(p,playerSprite, BodyDef.BodyType.DynamicBody,FIXTURE_DEF);
-		body.setUserData("player");
-
-		p.registerPhysicsConnector(new PhysicsConnector(playerSprite,body,true,true)
+		if(currLevel == 1)
 		{
-			@Override
-		public  void onUpdate(float pSecondsElapsed)
+			playerSprite = new AnimatedSprite(playerX, playerY, playerTiledTextureRegion,
+					c.getVertexBufferObjectManager());
+			playerSprite.animate(250);
+			s.attachChild(playerSprite);
+			
+			playerLeftSprite = new AnimatedSprite(playerX,playerY,playerLeftTiledTextureRegion,
+					c.getVertexBufferObjectManager());
+			playerLeftSprite.animate(250);
+			s.attachChild(playerLeftSprite);
+			
+			playerSprite.setVisible(true);
+			playerLeftSprite.setVisible(false);
+			
+			playerRightIdleSprite = new AnimatedSprite(playerX, playerY, playerRightIdleTiledTextureRegion,
+					c.getVertexBufferObjectManager());
+			playerRightIdleSprite.animate(200);
+			s.attachChild(playerRightIdleSprite);
+			
+			playerLeftIdleSprite = new AnimatedSprite(playerX, playerY, playerLeftIdleTiledTextureRegion,
+					c.getVertexBufferObjectManager());
+			playerLeftIdleSprite.animate(200);
+			s.attachChild(playerLeftIdleSprite);
+			
+			playerRightIdleSprite.setVisible(false);
+			playerLeftIdleSprite.setVisible(false);
+			
+	
+			currentSprite = playerSprite;
+	
+			FixtureDef FIXTURE_DEF = PhysicsFactory.createFixtureDef(0,0.1f,0.5f);
+			body = PhysicsFactory.createBoxBody(p,playerSprite, BodyDef.BodyType.DynamicBody,FIXTURE_DEF);
+			body.setUserData("player");
+	
+			p.registerPhysicsConnector(new PhysicsConnector(playerSprite,body,true,true)
 			{
-				super.onUpdate(pSecondsElapsed);
-				Move();
-			}
-		});
-		p.registerPhysicsConnector(new PhysicsConnector(playerLeftSprite,body,true,true)
+				@Override
+			public  void onUpdate(float pSecondsElapsed)
+				{
+					super.onUpdate(pSecondsElapsed);
+					Move();
+				}
+			});
+			p.registerPhysicsConnector(new PhysicsConnector(playerLeftSprite,body,true,true)
+			{
+				@Override
+			public  void onUpdate(float pSecondsElapsed)
+				{
+					super.onUpdate(pSecondsElapsed);
+					Move();
+				}
+			});
+			p.registerPhysicsConnector(new PhysicsConnector(playerRightIdleSprite,body,true,true)
+			{
+				@Override
+			public  void onUpdate(float pSecondsElapsed)
+				{
+					super.onUpdate(pSecondsElapsed);
+					Move();
+				}
+			});
+			p.registerPhysicsConnector(new PhysicsConnector(playerLeftIdleSprite,body,true,true)
+			{
+				@Override
+			public  void onUpdate(float pSecondsElapsed)
+				{
+					super.onUpdate(pSecondsElapsed);
+					Move();
+				}
+			});
+		}
+		else if(currLevel == 2)
 		{
-			@Override
-		public  void onUpdate(float pSecondsElapsed)
-			{
-				super.onUpdate(pSecondsElapsed);
-				Move();
-			}
-		});
-		p.registerPhysicsConnector(new PhysicsConnector(playerRightIdleSprite,body,true,true)
-		{
-			@Override
-		public  void onUpdate(float pSecondsElapsed)
-			{
-				super.onUpdate(pSecondsElapsed);
-				Move();
-			}
-		});
-		p.registerPhysicsConnector(new PhysicsConnector(playerLeftIdleSprite,body,true,true)
-		{
-			@Override
-		public  void onUpdate(float pSecondsElapsed)
-			{
-				super.onUpdate(pSecondsElapsed);
-				Move();
-			}
-		});
+			playerHorseSprite = new AnimatedSprite(playerX,playerY,playerOnHorseTextureRegion,
+					c.getVertexBufferObjectManager());
+			playerHorseSprite.animate(200);
+			s.attachChild(playerHorseSprite);
+			playerHorseSprite.setZIndex(8);
+			playerHorseSprite.setVisible(false);
+			
+			FixtureDef FIXTURE_DEF2 = PhysicsFactory.createFixtureDef(0,0.1f,0.5f);
+			horseBody = PhysicsFactory.createBoxBody(p,playerHorseSprite,BodyDef.BodyType.DynamicBody,FIXTURE_DEF2);
+			horseBody.setUserData("horse");
+			p.registerPhysicsConnector(new PhysicsConnector(playerHorseSprite,horseBody,true,true){
+				@Override
+			public  void onUpdate(float pSecondsElapsed)
+				{
+					super.onUpdate(pSecondsElapsed);
+					Move();
+				}
+			});
+			//horseBody.setTransform(250/30, 250/30, 0); 
+		}
+		
 	}
 	public void Jump(int level)
 	{
