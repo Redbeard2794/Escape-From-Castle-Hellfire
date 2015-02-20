@@ -4,10 +4,11 @@ package ie.itcarlow.CastleHell;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -104,8 +105,11 @@ public class WebSocket {
 	{
 		JSONObject json  = new JSONObject();
 		try {
+			Map<String, Integer> pos = new HashMap<String, Integer>();
+			pos.put("X", x);
+			pos.put("Y", y);
 			json.put("type", "updateState");
-			json.put("data", "x"+x+"y"+y);
+			json.put("data", pos);
 			mClient.send(json.toString());
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
