@@ -137,10 +137,12 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 	
 	private WebSocket mWebSocketClient;
 	
-	private final String TAG = "WebSocketActivity"; 
+	private final String TAG = "WebSocketActivity";  
+	
+	int prevSentX = 0, prevSentY = 0; 
 	
 	@Override
-	public EngineOptions onCreateEngineOptions()
+	public EngineOptions onCreateEngineOptions()  
 	{
 		mSmoothCamera = new SmoothCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT,
 				200, 0, 1.0f);
@@ -830,7 +832,16 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 			
 			else if(menu.isMultiplayer() == true)
 			{
+				//p.getBody().setTransform(250/30, 0, 0);
 				gameState = MULTIPLAYER;
+				t.setVisible(true);
+				deathText.setVisible(true);
+				int size = listOfPlatforms.size();
+				for (int i = 0; i < size; i++)
+				{
+					listOfPlatforms.get(i).getSprite().setVisible(true);
+				}
+				
 				mWebSocketClient.sendMessage();
 			}
 			
@@ -877,19 +888,21 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 			jumpButtonSprite.setVisible(true);
 			rightArrowSprite.setZIndex(12);
 			p.getCurrentSprite().setVisible(true);
-			
+			  
 			if(p.getDead() == true)
 			{
 				//p.getCurrentSprite().setX(250);
 				//p.getCurrentSprite().setY(250);
-				if(currentLevel == 1)
+				if(currentLevel == 1){
 					p.getBody().setTransform(250 / 30, 250 /30,0);
+					//p.getBody().setTransform(2460/30, 0, 0);
+				}
 				else if(currentLevel == 2)
 					p.getHorseBody().setTransform(250 / 30, 250 /30,0); 
 				deathScream.play();
 				p.setDead(false);
 				deathCounter++;
-				for(int i=0;i<fallingTraps.size();i++)
+				for(int i=0;i<fallingTraps.size();i++) 
 				{
 					if(fallingTraps.get(i).getHasFallen() == true)
 					{
@@ -899,6 +912,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 						fallingTraps.remove(i);
 					}
 				}  
+				updateDeathCounter(deathCounter);
 			}
 			time++;
 			if(time>=60)
@@ -911,6 +925,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 			
 			if(p.getCurrentSprite().collidesWith(listOfDoors.get(0).getDoorSprite()))
 			{
+				updateLevelState(true);
 				if(currentLevel < 2)
 				{
 					currentLevel+=1;
@@ -951,8 +966,15 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 					prevX = p.getPlayerX();
 				}
 			}
+			//optimise this later
 			
-			updateState(false);
+			if((int)p.getPlayerX() != prevSentX || (int)p.getPlayerY() != prevSentY)
+			{
+				prevSentX = (int)p.getPlayerX();
+				prevSentY = (int)p.getPlayerY();
+				updateState(false);
+			}
+			
 			
 		}
 		
@@ -1099,5 +1121,14 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 		else if(remoteMessage == false){
 			mWebSocketClient.sendMessage((int)p.getPlayerX(), (int)p.getPlayerY()); 
 		}
+	}
+	public void updateLevelState(boolean update)
+	{
+		mWebSocketClient.sendMessageDoor(update);
+	}
+	
+	public void updateDeathCounter(int dt)
+	{
+		mWebSocketClient.sendDeathCount(dt);
 	}
 }

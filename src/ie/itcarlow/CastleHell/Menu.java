@@ -151,6 +151,10 @@ public class Menu {
 		            	break;}
 		           case MotionEvent.ACTION_UP:{
 		        	   multiplayer = true;
+		       			playButtonSprite.setVisible(false);
+		       			optionsButtonSprite.setVisible(false);
+		       			quitButtonSprite.setVisible(false);
+		       			multiplayerSprite.setVisible(false);
 		                break;}
 		        }
 				return true;

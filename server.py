@@ -24,12 +24,14 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			self.handleMessage(message)
 
 		elif len(players) == 1 and len(players) < 2:
-			players[self.request.remote_ip] = self
-			print(len(players))#print the number of players
-			#self.sendGameStart(message)
-			#send a game start message to both players
-			for i in players:
-				players[i].sendGameStart(message)
+			m = json.loads(message)
+			if m["type"] == "join":
+				players[self.request.remote_ip] = self
+				print(len(players))#print the number of players
+				#self.sendGameStart(message)
+				#send a game start message to both players
+				for i in players:
+					players[i].sendGameStart(message)
 
 		elif len(players) >= 2:
 			m = json.loads(message)
@@ -38,16 +40,38 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 			if m['type'] == "join":
 				self.sendGameFull(m)
 			
-			#else if the message is of update state  then send this info to the other player
-			#data should be the position of something or what needs to be communicated
+			#if the android player moves
 			elif m['type'] == "updateState":
+				print("sending position update message")
 				for i in players:
 					if i is not self.request.remote_ip:
 						players[i].write_message(message)
-
-		elif len(players) == 1:
+						
+			#if the android player completes the level
+			elif m["type"] == "level clear":
+				print("sending level clear message")
+				for i in players:
+					if i is not self.request.remote_ip:
+						players[i].write_message(message)
+						
+			#if the android player died			
+			elif m["type"] == "death":
+				print("Sending a death count update message")
+				for i in players:
+					if i is not self.request.remote_ip:
+						players[i].write_message(message)
+						
+		
+		"""elif len(players) == 1:
 			m=json.loads(message)
-			print(m["data"])
+			if m["type"] == "updateState":
+				print(m["data"])
+			elif m["type"] == "level clear":
+				print(m["type"] + "" + m["data"])
+			elif m["type"] == "death":
+				print(m["data"])
+			"""
+
 		
 	def sendToAll(self):
 		for i in players:
@@ -103,7 +127,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
 		msg=dict()
 		#load the incoming message
-		incomingMessage = json.loads(message)
+		#incomingMessage = json.loads(message)
 		print(incomingMessage)
 
 		msg["type"]="state"#set your type here

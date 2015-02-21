@@ -117,4 +117,33 @@ public class WebSocket {
 		}
 		
 	}
+	void sendMessageDoor(boolean hit)
+	{
+		JSONObject json  = new JSONObject();
+		try {
+			//Map<String, Boolean> dh = new HashMap<String, Boolean>();
+			//dh.put("Door hit", hit);
+			json.put("type", "level clear");
+			json.put("data", hit);
+			mClient.send(json.toString());
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	void sendDeathCount(int deaths)
+	{
+		JSONObject json  = new JSONObject();
+		try {
+			//Map<String, Boolean> dh = new HashMap<String, Boolean>();
+			//dh.put("Door hit", deaths);
+			json.put("type", "death");
+			json.put("data", deaths);
+			mClient.send(json.toString());
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
