@@ -59,11 +59,11 @@ public class Player
 	public void setPlayerHorseSprite(AnimatedSprite playerHorseSprite) {
 		this.playerHorseSprite = playerHorseSprite;
 	}
-
+ 
 	public Player(Context c, TextureManager t)
 	{
 		loadGFX(c, t);
-		playerX = 350;
+		playerX = 250;
 		playerY = 250;
 		moveRight = false;
 		moveLeft = false;

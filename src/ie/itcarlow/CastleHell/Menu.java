@@ -179,6 +179,14 @@ public class Menu {
 			quitButtonSprite.setVisible(false);
 			multiplayerSprite.setVisible(false);
 		}
+		else if(multiplayer == true)
+		{
+			startGame = false;
+			playButtonSprite.setVisible(false);
+			optionsButtonSprite.setVisible(false);
+			quitButtonSprite.setVisible(false);
+			multiplayerSprite.setVisible(false);
+		}
 		else
 		{
 			playButtonSprite.setVisible(true);

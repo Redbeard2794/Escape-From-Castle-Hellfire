@@ -1,8 +1,6 @@
 package ie.itcarlow.CastleHell;
 
 
-import ie.itcarlow.CastleHell.WebSocket;
-
 import java.io.IOException;
 import java.util.Vector;
 
@@ -21,6 +19,7 @@ import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
+import org.andengine.entity.util.FPSLogger;
 import org.andengine.extension.debugdraw.DebugRenderer;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
@@ -192,7 +191,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 		loadGfx();
 		
 		 mWebSocketClient = new WebSocket(this);	
-		
+		 mEngine.registerUpdateHandler(new FPSLogger());
 		pOnCreateResourcesCallback.onCreateResourcesFinished();
 
 	}
@@ -870,14 +869,14 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 				deathText.setX(p.getPlayerX()-280);
 				prevX = p.getPlayerX();
 			}
-			for(int i=0;i<listOfProximityTraps.size();i++)
+			/*for(int i=0;i<listOfProximityTraps.size();i++)
 			{
 				if(p.getCurrentSprite().getX() > listOfProximityTraps.get(i).getSprite().getX() -80 && listOfProximityTraps.get(i).getHasFallen() == false)
 				{
 					listOfProximityTraps.get(i).Trigger();
 					fallingTraps.add(listOfProximityTraps.get(i));
 				}
-			}
+			}*/
 			
 			splashSprite.setVisible(false);
 			tapToPlaySprite.setVisible(false);
@@ -891,11 +890,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 			  
 			if(p.getDead() == true)
 			{
-				//p.getCurrentSprite().setX(250);
-				//p.getCurrentSprite().setY(250);
 				if(currentLevel == 1){
 					p.getBody().setTransform(250 / 30, 250 /30,0);
-					//p.getBody().setTransform(2460/30, 0, 0);
 				}
 				else if(currentLevel == 2)
 					p.getHorseBody().setTransform(250 / 30, 250 /30,0); 
@@ -966,8 +962,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 					prevX = p.getPlayerX();
 				}
 			}
-			//optimise this later
 			
+			//send the players position if it has changed
 			if((int)p.getPlayerX() != prevSentX || (int)p.getPlayerY() != prevSentY)
 			{
 				prevSentX = (int)p.getPlayerX();
