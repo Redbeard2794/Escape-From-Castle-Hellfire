@@ -37,21 +37,4 @@ public class SharedPreferencesManager {
 		 boolean debugstate = mSharedPref.getBoolean("state", defaultValue);
 		 return debugstate;
 	 }
-	 
-	 
-	 
-	 /*public void saveHighScore(String playerId, int highScore) {
-		 mSharedPref = mActivity.getPreferences(Context.MODE_PRIVATE);
-		 SharedPreferences.Editor editor = mSharedPref.edit();		
-		 editor.putInt(mActivity.getString(R.string.saved_high_score) + playerId, highScore);
-		 editor.commit();
-	 }*/
-	 
-	/* public int getHighScore(String playerId) {		 	
-		 int defaultValue = 0;
-		 int highScore = mSharedPref.getInt(mActivity.getString(R.string.saved_high_score) + playerId, defaultValue);
-		 return highScore;
-	 }*/
-	 
-	 
 }

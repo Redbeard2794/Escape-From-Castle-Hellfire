@@ -745,8 +745,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 					}
 					case MotionEvent.ACTION_UP:
 					{
-						//if(gameState!=OPTIONS)
-						//if(gameState == OPTIONS)
 						if(gameState == OPTIONS)
 						{
 							menu.setOptions(false);
@@ -754,8 +752,6 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 							toggleDebugDrawSprite.setVisible(false);
 							backButtonSprite.setVisible(false);
 						}
-						//Main.this.reset();
-						//gameState = GAME;
 						break;
 					}
 				
@@ -1191,16 +1187,11 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
             	//p.setDead(true);
             	for(int i=0;i< fallingTraps.size();i++)
             	{
-
-            		//fallingTraps.get(i).getBody().setTransform(fallingTraps.get(i).getSprite().getX()/30, fallingTraps.get(i).getStartY()/30, 0);
-            		//fallingTraps.get(i).Reset();
             		if(fallingTraps.get(i).getHasFallen() == false)
             		{
             			p.setDead(true);
             			fallingTraps.get(i).setHasFallen(true);
             		}
-            		//fallingTraps.remove(i);
-            		//fallingTraps.remove(fallingTraps.get(i));
             	}
             }
             else if (userdata1.equals("platform") && userdata2.equals("proximityTrap") || 
