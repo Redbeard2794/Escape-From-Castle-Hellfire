@@ -96,7 +96,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		incomingMessage = json.loads(message)
 		print(incomingMessage)
 		
-		msg["type"]="state"#set your type here
+		msg["type"]="waiting"#set your type here
 		msg["data"]="waiting for other people" #set your message data here
 		msg=json.dumps(msg)
 		print(msg)
@@ -112,7 +112,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		incomingMessage = json.loads(message)
 		print(incomingMessage)
 
-		msg["type"]="state"#set your type here
+		msg["type"]="gamestart"#set your type here
 		msg["data"]="Game starting now" #set your message data here
 		msg=json.dumps(msg)
 		print(msg)
@@ -130,7 +130,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		#incomingMessage = json.loads(message)
 		print(incomingMessage)
 
-		msg["type"]="state"#set your type here
+		msg["type"]="gamefull"#set your type here
 		msg["data"]="Game is full. Try again later" #set your message data here
 		msg=json.dumps(msg)
 

@@ -19,7 +19,7 @@ import com.codebutler.android_websockets.WebSocketClient;
 public class WebSocket {
 	private final String TAG = "WebSocket"; 
 	private WebSocketClient mClient;
-	boolean joinSent = false;
+	boolean joinSent = false; 
 	
 	int numPlayers = 1;
 	private MessageHandler mHandler;
@@ -31,7 +31,7 @@ public class WebSocket {
 		);
 		
 		//"ws://10.0.2.2:8080/wstest"
-		mClient = new WebSocketClient(URI.create("ws://10.0.3.2:8080/wstest"), new WebSocketClient.Listener() {
+		mClient = new WebSocketClient(URI.create("ws://149.153.102.24:8080/wstest"), new WebSocketClient.Listener() {
 		    @Override
 		    public void onConnect() {
 		       Log.d(TAG, "Connected!");
@@ -40,8 +40,9 @@ public class WebSocket {
 
 		    @Override
 		    public void onMessage(String message) {
-		        Log.d(TAG, String.format("Got string message! %s", message));
+		        Log.d(TAG, String.format("Got string message! %s", message)); 
 		        try {
+		        		Log.d(TAG, "Recieved message");
 		        		JSONObject json = new JSONObject(message);
 		        		String type = json.getString("type");
 		        		String pid = json.getString("data");

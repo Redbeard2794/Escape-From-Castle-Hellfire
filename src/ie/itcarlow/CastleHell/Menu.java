@@ -27,7 +27,9 @@ public class Menu {
 	
 	boolean startGame = false;
 	boolean multiplayer = false;
+	boolean options = false;
 	
+
 	public Menu(Context c, TextureManager t)
 	{
 		loadGFX(c, t);
@@ -99,6 +101,11 @@ public class Menu {
 		          case MotionEvent.ACTION_MOVE: {
 		            	break;}
 		           case MotionEvent.ACTION_UP:{
+		        	   options = true;
+		       			playButtonSprite.setVisible(false);
+		       			optionsButtonSprite.setVisible(false);
+		       			quitButtonSprite.setVisible(false);
+		       			multiplayerSprite.setVisible(false);
 		                break;}
 		        }
 				return true;
@@ -187,6 +194,13 @@ public class Menu {
 			quitButtonSprite.setVisible(false);
 			multiplayerSprite.setVisible(false);
 		}
+		else if(options == true)
+		{
+			playButtonSprite.setVisible(false);
+			optionsButtonSprite.setVisible(false);
+			quitButtonSprite.setVisible(false);
+			multiplayerSprite.setVisible(false);
+		}
 		else
 		{
 			playButtonSprite.setVisible(true);
@@ -202,4 +216,12 @@ public class Menu {
 	public void setMultiplayer(boolean multiplayer) {
 		this.multiplayer = multiplayer;
 	}
+	
+	public boolean isOptions() {
+		return options;
+	}
+	public void setOptions(boolean options) {
+		this.options = options;
+	}
+	
 }

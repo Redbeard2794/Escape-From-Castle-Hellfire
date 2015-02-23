@@ -1,6 +1,9 @@
 package ie.itcarlow.CastleHell;
 
 
+import ie.itcarlow.CastleHell.SharedPreferencesManager;
+import ie.itcarlow.CastleHell.Main;
+
 import java.io.IOException;
 import java.util.Vector;
 
@@ -93,6 +96,16 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 
 	private ITextureRegion tapToPlayTextureRegion;
 	private Sprite tapToPlaySprite;
+	
+	//options text
+	private ITextureRegion toggleDebugDrawTextureRegion;
+	private Sprite toggleDebugDrawSprite;
+	private Text debugDrawText;
+	private String ddText = "Debug draw: ";
+	
+	private ITextureRegion backButtonTextureRegion;
+	private Sprite backButtonSprite;
+	
 
 	private PhysicsWorld physicsWorld;
 	private Player p;
@@ -115,6 +128,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 	private final byte GAME = 2;
 	private final byte MULTIPLAYER = 4;
 	byte END = 3;
+	private final byte OPTIONS = 5;
 	public int gameState = SPLASH;
 	
 	Sound deathScream;
@@ -123,6 +137,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 	private String myText = "Time elapsed: ";
 	private Text deathText;
 	private String deaths = "Deaths: ";
+	
+	
 	
 	int time;
 	int textLength = 50; 
@@ -139,6 +155,12 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 	private final String TAG = "WebSocketActivity";  
 	
 	int prevSentX = 0, prevSentY = 0; 
+	
+	private SharedPreferencesManager mManager;
+	boolean dDraw;
+	DebugRenderer debug;
+	
+	//mManager.getHighScore
 	
 	@Override
 	public EngineOptions onCreateEngineOptions()  
@@ -192,12 +214,14 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 		
 		 mWebSocketClient = new WebSocket(this);	
 		 mEngine.registerUpdateHandler(new FPSLogger());
+		 mManager =  SharedPreferencesManager.getInstance(this);
+		 dDraw = mManager.getDebugDraw();  
 		pOnCreateResourcesCallback.onCreateResourcesFinished();
 
 	}
 
 	private void loadGfx()
-	{
+	{	
 
 		f = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, Typeface.create(Typeface.DEFAULT,Typeface.BOLD_ITALIC), 27);
 		f.load();
@@ -251,6 +275,22 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 				.createFromAsset(jumpButtonTexture, this, "JumpButton.png", 0,
 						0);
 		jumpButtonTexture.load();
+		
+		
+		BitmapTextureAtlas toggleDebugDrawTexture = new BitmapTextureAtlas(
+				getTextureManager(),397,86);
+		toggleDebugDrawTextureRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(toggleDebugDrawTexture, this, "debugDrawButton.png",0,0);
+		toggleDebugDrawTexture.load();
+		
+		//private ITextureRegion backButtonTextureRegion;
+		BitmapTextureAtlas backButtonTexture = new BitmapTextureAtlas(
+				getTextureManager(),397,86);
+		backButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(backButtonTexture, this, "backButton.png",0,0);
+		backButtonTexture.load();
+		
+		//private Sprite backButtonSprite;
 
 		// t = new ProximityTrap(200, 50, this, getTextureManager());
 		p = new Player(this, getTextureManager());
@@ -646,14 +686,96 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 		};
 		mScene.attachChild(jumpButtonSprite);
 		this.mScene.registerTouchArea(jumpButtonSprite);
+		
+		debugDrawText = new Text(20,20,f,myText,textLength,new TextOptions(HorizontalAlign.CENTER),this.getVertexBufferObjectManager());
+		debugDrawText.setColor(1.0f, 0.0f, 0.0f);
+		debugDrawText.setText( ddText + dDraw);
+		
+		mScene.attachChild(debugDrawText);
+		
+		toggleDebugDrawSprite = new Sprite(50, 50, toggleDebugDrawTextureRegion,
+				this.mEngine.getVertexBufferObjectManager())
+		{
+			@Override
+			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
+					final float pTouchAreaLocalX, final float pTouchAreaLocalY)
+			{
+				int myEventAction = pSceneTouchEvent.getAction();
+
+				switch (myEventAction)
+				{
+
+					case MotionEvent.ACTION_UP:
+					{
+						if(gameState == OPTIONS)
+						{
+						dDraw = !dDraw;
+						debugDrawText.setText( ddText + dDraw);
+						mManager.saveDebugDraw(dDraw);
+						}
+						//private Text debugDrawText;
+						//private String ddText = "Debug draw: ";
+
+						break;
+					}
+				
+				}
+				return true;
+			}
+		};
+		mScene.attachChild(toggleDebugDrawSprite);
+		this.mScene.registerTouchArea(toggleDebugDrawSprite);
+		
+		backButtonSprite = new Sprite(350, 50, backButtonTextureRegion,
+				this.mEngine.getVertexBufferObjectManager())
+		{
+			@Override
+			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
+					final float pTouchAreaLocalX, final float pTouchAreaLocalY)
+			{
+				int myEventAction = pSceneTouchEvent.getAction();
+
+				switch (myEventAction)
+				{
+					case MotionEvent.ACTION_DOWN:
+					{
+						//gameState = MENU;
+						
+						break;
+					}
+					case MotionEvent.ACTION_UP:
+					{
+						//if(gameState!=OPTIONS)
+						//if(gameState == OPTIONS)
+						if(gameState == OPTIONS)
+						{
+							menu.setOptions(false);
+							gameState = MENU; 
+							toggleDebugDrawSprite.setVisible(false);
+							backButtonSprite.setVisible(false);
+						}
+						//Main.this.reset();
+						//gameState = GAME;
+						break;
+					}
+				
+				}
+				return true;
+			}
+		};
+		mScene.attachChild(backButtonSprite);
+		this.mScene.registerTouchArea(backButtonSprite);
+		
 		this.mEngine.registerUpdateHandler(this);
 		physicsWorld.setContactListener(contactListener);
 		// t.Populate(this.mEngine, mScene);
 		p.Populate(this.mEngine, mScene, physicsWorld, currentLevel);
 		menu.Populate(this.mEngine, mScene);
 		
-        DebugRenderer debug = new DebugRenderer(physicsWorld, getVertexBufferObjectManager());
-        pScene.attachChild(debug);
+		debug = new DebugRenderer(physicsWorld, getVertexBufferObjectManager());
+		pScene.attachChild(debug); 
+		debug.setVisible(dDraw);
+
 
 
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
@@ -668,6 +790,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 		setSpritesForGameState();
 		if (gameState == GAME)
 		{
+			toggleDebugDrawSprite.setVisible(false);
 			// p.Move();
 			// mSmoothCamera.setCenter(p.getPlayerX(), p.getPlayerY());
 			if (p.getPlayerX() > prevX)
@@ -807,6 +930,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 			rightArrowSprite.setZIndex(4);
 			t.setVisible(false);
 			deathText.setVisible(false);
+			toggleDebugDrawSprite.setVisible(false);
+			debugDrawText.setVisible(false);
+			backButtonSprite.setVisible(false);
 		} 
 		else if (gameState == MENU)
 		{
@@ -827,6 +953,9 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 				{
 					listOfPlatforms.get(i).getSprite().setVisible(true);
 				}
+				toggleDebugDrawSprite.setVisible(false);
+				debugDrawText.setVisible(false);
+				backButtonSprite.setVisible(false);
 			}
 			
 			else if(menu.isMultiplayer() == true)
@@ -840,14 +969,32 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 				{
 					listOfPlatforms.get(i).getSprite().setVisible(true);
 				}
-				
+				toggleDebugDrawSprite.setVisible(false);
+				backButtonSprite.setVisible(false);
 				mWebSocketClient.sendMessage();
+				debugDrawText.setVisible(true);
+			}
+			
+			else if(menu.isOptions() == true)
+			{
+				gameState = OPTIONS;
+				toggleDebugDrawSprite.setVisible(true);
+				debug.setVisible(dDraw);
+				debugDrawText.setVisible(true);
+				backButtonSprite.setVisible(true);
 			}
 			
 		}
 		
+		else if(gameState == OPTIONS)
+		{
+			debug.setVisible(dDraw);
+			debugDrawText.setVisible(true);
+		}
+		
 		else if(gameState == MULTIPLAYER)
 		{
+			toggleDebugDrawSprite.setVisible(false);
 			// p.Move();
 			// mSmoothCamera.setCenter(p.getPlayerX(), p.getPlayerY());
 			if (p.getPlayerX() > prevX)
@@ -971,7 +1118,7 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 				updateState(false);
 			}
 			
-			
+			debugDrawText.setVisible(false);
 		}
 		
 		else if (gameState == GAME)
@@ -1094,6 +1241,16 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
  		   		//hPos = data;
  		   		updateState(true);
  		   	}  
+ 		   	
+ 		   	//deal with html messages here
+ 		   	if(type.equalsIgnoreCase("updateTrap"))
+ 		   	{
+ 		   		
+ 		   	}
+ 		   	if(type.equalsIgnoreCase("trapHit"))
+ 		   	{
+ 		   		
+ 		   	}
 
  
 
