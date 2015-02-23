@@ -160,6 +160,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 	boolean dDraw;
 	DebugRenderer debug;
 	
+	int joinsSent = 0;
+	
 	//mManager.getHighScore
 	
 	@Override
@@ -957,8 +959,8 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 			else if(menu.isMultiplayer() == true)
 			{
 				//p.getBody().setTransform(250/30, 0, 0);
-				gameState = MULTIPLAYER;
-				t.setVisible(true);
+				//gameState = MULTIPLAYER;
+				/*t.setVisible(true);
 				deathText.setVisible(true);
 				int size = listOfPlatforms.size();
 				for (int i = 0; i < size; i++)
@@ -967,8 +969,15 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 				}
 				toggleDebugDrawSprite.setVisible(false);
 				backButtonSprite.setVisible(false);
-				mWebSocketClient.sendMessage();
-				debugDrawText.setVisible(true);
+				
+				debugDrawText.setVisible(true);*/
+				
+				if(joinsSent < 1)
+				{
+					mWebSocketClient.sendMessage(); 
+					joinsSent+=1;
+				}
+				//menu.setMultiplayer(false);
 			}
 			
 			else if(menu.isOptions() == true)
@@ -1012,14 +1021,14 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
 				deathText.setX(p.getPlayerX()-280);
 				prevX = p.getPlayerX();
 			}
-			/*for(int i=0;i<listOfProximityTraps.size();i++)
+			for(int i=0;i<listOfProximityTraps.size();i++)
 			{
 				if(p.getCurrentSprite().getX() > listOfProximityTraps.get(i).getSprite().getX() -80 && listOfProximityTraps.get(i).getHasFallen() == false)
 				{
 					listOfProximityTraps.get(i).Trigger();
 					fallingTraps.add(listOfProximityTraps.get(i));
 				}
-			}*/
+			}
 			
 			splashSprite.setVisible(false);
 			tapToPlaySprite.setVisible(false);
@@ -1234,11 +1243,32 @@ public class Main extends BaseGameActivity implements IUpdateHandler, MessageHan
  		   	}  
  		   	
  		   	//deal with html messages here
- 		   	if(type.equalsIgnoreCase("updateTrap"))
+ 		   	//for placing a trap
+ 		   	else if(type.equalsIgnoreCase("placeTrap"))
  		   	{
- 		   		
+ 		   		int x = json.getInt("x");
+ 		   		int y = json.getInt("y");
+				ProximityTrap trap = new ProximityTrap(x, y, c, getTextureManager());
+				listOfProximityTraps.add(trap);
  		   	}
- 		   	if(type.equalsIgnoreCase("trapHit"))
+ 		   	
+ 		   	else if(type.equalsIgnoreCase("gamestart"))
+ 		   	{
+				t.setVisible(true);
+				deathText.setVisible(true);
+				int size = listOfPlatforms.size();
+				for (int i = 0; i < size; i++)
+				{
+					listOfPlatforms.get(i).getSprite().setVisible(true);
+				}
+				toggleDebugDrawSprite.setVisible(false);
+				backButtonSprite.setVisible(false);
+				
+				debugDrawText.setVisible(true);
+ 		   		gameState = MULTIPLAYER;
+ 		   	}
+ 		   	
+ 		   	else if(type.equalsIgnoreCase("trapHit"))
  		   	{
  		   		
  		   	}

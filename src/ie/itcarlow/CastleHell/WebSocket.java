@@ -18,14 +18,14 @@ import com.codebutler.android_websockets.WebSocketClient;
 
 public class WebSocket {
 	private final String TAG = "WebSocket"; 
-	private WebSocketClient mClient;
+	private WebSocketClient mClient; 
 	boolean joinSent = false; 
 	
 	int numPlayers = 1;
 	private MessageHandler mHandler;
 
 	public WebSocket(MessageHandler handler) {
-		//mHandler = handler;
+		mHandler = handler;
 		List<BasicNameValuePair> extraHeaders = Arrays.asList(
 			    new BasicNameValuePair("Cookie", "session=abcd")
 		);
